@@ -1,8 +1,8 @@
 /env
 
-
 /*_pycache__/
 *.pyc
 /*migrations/   
 /db.sqlite3
+
 
