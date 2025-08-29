@@ -31,6 +31,8 @@ schema_view=swagger_get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/',include('accounts.urls')),
+
     path("market/",include("market.urls")),
+    path("cart/",include("cart.urls")),
     path("swagger/",schema_view.with_ui('swagger',cache_timeout=0),name='schema-swagger-ui'),
 ]

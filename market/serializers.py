@@ -1,5 +1,6 @@
+
 from rest_framework import serializers
-from .models import Product,Owner
+from .models import Product,Owner,CartItem, Cart
 from accounts.models import CustomUser
 
 
@@ -26,4 +27,23 @@ class ProductSerializer(serializers.ModelSerializer):
         extra_kwargs = {
            "id": {"read_only": True},
        }
+
+
+
+class CartItemSerilizer(serializers.ModelSerializer):
+    product_name=serializers.CharField(source="product.product_name", read_only=True)
+
+    class Meta:
+        model= CartItem
+        fields=["id","product", "product_name", "quantity",]
+
+
+
+class CartSerializer(serializers.ModelSerializer):
+    item=CartItemSerilizer(source="cartitem_set",many=True)
+
+    class Meta:
+        model= Cart
+        fields=["id","user","item",]
+
 
