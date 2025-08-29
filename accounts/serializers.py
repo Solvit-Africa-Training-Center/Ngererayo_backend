@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import CustomUser
+from django.utils import timezone
+from django.contrib.auth import authenticate
 
 
 class  RegisterUserSerializer(serializers.ModelSerializer):
@@ -33,4 +35,51 @@ class  RegisterUserSerializer(serializers.ModelSerializer):
               role=validated_data.get("role", "buyer")
          )
          return user
-            
+
+
+
+
+class VerifyOtpSerializer(serializers.Serializer):
+     email=serializers.EmailField(required=True)
+     otp=serializers.CharField(required=True)
+     def validate(self, data):
+          email=data.get("email")
+          otp=data.get("otp")
+
+          try:
+               user=CustomUser.objects.get(email=email)
+          except CustomUser.DoesNotExist:
+               raise serializers.ValidationError("email not exists")
+          if user.otp!=otp:
+               raise serializers.ValidationError("invalid otp")
+          if user.otp_expiry and user.otp_expiry< timezone.now():
+               raise serializers.ValidationError("otp expired")
+          user.is_verified=True
+          user.save()
+          return data
+     
+
+
+
+
+class AuthenticateUserSerializer(serializers.ModelSerializer):
+     email=serializers.EmailField(required=True)
+     password=serializers.CharField(write_only=True, required=True)
+     class Meta:
+          model=CustomUser
+          fields=["email","password"]
+
+
+     def validate(self, data):
+          email=data.get("email")
+          password=data.get("password")
+
+          if not email or not password:
+                raise serializers.ValidationError("all fields are required")
+          
+          user=authenticate(email=email, password=password)
+          if not user:
+                raise serializers.ValidationError(" wrong email or password")
+          data["user"]=user
+          return data
+               
