@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework import viewsets,status,generics
 from rest_framework.views import APIView
 from rest_framework import permissions
+from django.shortcuts import get_object_or_404
 
-from .serializers import ProductSerializer,OwnerSerialzer,CartSerializer, CartItemSerilizer
+from .serializers import ProductSerializer,OwnerSerialzer,CartSerializer,CartItemSerilizer
 from .models import *
 
 
@@ -134,31 +135,37 @@ class OwnerDeleteProduct(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-def get_user_cart(user):
-    cart, created = Cart.objects.get_or_create(user=user)
-    return cart
+
 
 class CartView(generics.RetrieveAPIView):
-    serializer_class = CartSerializer
-
+    serializer_class=CartSerializer
     def get_object(self):
-        return get_user_cart(self.request.user)
+        user=self.request.user  if self.request.user.is_authenticated else None
+        session_key=self.request.session.session_key or self.request.session.create()
+        if user:
+            cart,_=Cart.objects.get_or_create(user=user )
+        else:
+            cart, _=Cart.objects.get_or_create(session_key=session_key)
+        return cart        
+    
 
 
-class AddToCartView(generics.GenericAPIView):
+
+class AddToCartView(generics.CreateAPIView):
     serializer_class = CartItemSerilizer
 
-    def post(self, request, *args, **kwargs):
-        product_id = request.data.get("product_id")
+    def create(self, request, *args, **kwargs):
+        user = request.user if request.user.is_authenticated else None
+        session_key = request.session.session_key or request.session.create()
+
+        if user:
+            cart, _ = Cart.objects.get_or_create(user=user)
+        else:
+            cart, _ = Cart.objects.get_or_create(session_key=session_key)
+
+        product = get_object_or_404(Product, id=request.data.get("product_id"))
         quantity = int(request.data.get("quantity", 1))
 
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response({"error": "Product not found please find other one"}, status=status.HTTP_404_NOT_FOUND)
-
-        cart = get_user_cart(request.user)
-        
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         if not created:
             cart_item.quantity += quantity
@@ -167,3 +174,4 @@ class AddToCartView(generics.GenericAPIView):
         cart_item.save()
 
         return Response(CartItemSerilizer(cart_item).data, status=status.HTTP_201_CREATED)
+
