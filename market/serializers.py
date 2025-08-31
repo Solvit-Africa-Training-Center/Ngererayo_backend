@@ -31,11 +31,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerilizer(serializers.ModelSerializer):
-    product_name=serializers.CharField(source="product.product_name", read_only=True)
+    product=ProductSerializer(read_only=True)
+    product_id=serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),source='product',write_only=True)
 
     class Meta:
         model= CartItem
-        fields=["id","product", "product_name", "quantity",]
+        fields=["id","product", "product_id", "quantity",]
 
 
 
@@ -44,6 +45,6 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= Cart
-        fields=["id","user","item",]
+        fields=["id","user","item","session_key"]
 
 
