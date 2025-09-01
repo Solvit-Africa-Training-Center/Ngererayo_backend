@@ -31,12 +31,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CartItemSerilizer(serializers.ModelSerializer):
-    product=ProductSerializer(read_only=True)
+    
     product_id=serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),source='product',write_only=True)
+    product=ProductSerializer(read_only=True)
 
     class Meta:
         model= CartItem
-        fields=["id","product", "product_id", "quantity",]
+        fields=["id","product_id", "quantity", "product"]
+
+
 
 
 
