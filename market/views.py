@@ -154,24 +154,26 @@ class CartView(generics.RetrieveAPIView):
 class AddToCartView(generics.CreateAPIView):
     serializer_class = CartItemSerilizer
 
-    def create(self, request, *args, **kwargs):
-        user = request.user if request.user.is_authenticated else None
-        session_key = request.session.session_key or request.session.create()
+    def perform_create(self, serializer):
+        user = self.request.user if self.request.user.is_authenticated else None
+        session_key = self.request.session.session_key
+        if not session_key:
+            self.request.session.create()
 
-        if user:
-            cart, _ = Cart.objects.get_or_create(user=user)
-        else:
-            cart, _ = Cart.objects.get_or_create(session_key=session_key)
+        
+        cart, _ = Cart.objects.get_or_create(user=user)
 
-        product = get_object_or_404(Product, id=request.data.get("product_id"))
-        quantity = int(request.data.get("quantity", 1))
+        product = serializer.validated_data["product"]
+        quantity = serializer.validated_data["quantity"]
 
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            product=product,
+            defaults={"quantity": quantity}
+        )
         if not created:
             cart_item.quantity += quantity
-        else:
-            cart_item.quantity = quantity
-        cart_item.save()
+            cart_item.save()
 
-        return Response(CartItemSerilizer(cart_item).data, status=status.HTTP_201_CREATED)
-
+        serializer.instance = cart_item

@@ -28,12 +28,14 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,null=True,blank=True)
     session_key=models.CharField(max_length=40,null=True,blank=True)
     products = models.ManyToManyField(Product, through='CartItem')
 
     def __str__(self):
-        return f"Cart of {self.user.username}"
+        if self.user:
+          return f"Cart of {self.user.username}"
+        return f"Cart of session {self.session_key}"
 
 
 class CartItem(models.Model):
@@ -42,7 +44,10 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.quantity} of {self.product.product_name} in {self.cart.user.username}'s cart"
+        if self.cart.user:
+          return f"{self.quantity} of {self.product.product_name} in {self.cart.user.username}'s cart"    
+        return f"{self.quantity} of {self.product.product_name} in session {self.cart.session_key}"
+        
 
 
 
