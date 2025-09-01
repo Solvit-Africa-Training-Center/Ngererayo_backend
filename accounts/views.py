@@ -8,7 +8,10 @@ from rest_framework.permissions import AllowAny
 from accounts.tasks import send_welcome_email_task
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from .serializers import RegisterUserSerializer,AuthenticateUserSerializer,VerifyOtpSerializer
+from .serializers import (RegisterUserSerializer,
+                          AuthenticateUserSerializer,
+                          UserSerializer,
+                          VerifyOtpSerializer)
 from .models import CustomUser
 
 
@@ -93,3 +96,10 @@ class LogoutView(APIView):
 
 
       
+class CurrentLoginUserView(APIView):
+      def get(self, request, *args, **kwargs):
+            user = request.user
+            if user.is_authenticated:
+                  serializer = UserSerializer(user)
+                  return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
