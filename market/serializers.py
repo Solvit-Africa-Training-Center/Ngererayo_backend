@@ -1,6 +1,9 @@
 
 from rest_framework import serializers
-from .models import Product,Owner,CartItem, Cart
+from .models import (Product,Owner,
+                     ProductMessage,
+                     ProductComments,
+                     CartItem, Cart)
 from accounts.models import CustomUser
 
 
@@ -51,3 +54,11 @@ class CartSerializer(serializers.ModelSerializer):
         fields=["id","user","item","session_key"]
 
 
+
+
+class ProductMessageSerializer(serializers.ModelSerializer):
+     sender=serializers.ReadOnlyField(source='sender.username')
+     receiver=serializers.ReadOnlyField(source='receiver.farming_name')
+     class Meta:
+         model=ProductMessage
+         fields=["id","sender","receiver","message","created_at","is_read","parent"]
