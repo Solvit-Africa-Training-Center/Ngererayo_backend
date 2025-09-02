@@ -1,11 +1,17 @@
 
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets,status,generics
 from rest_framework.views import APIView
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
 
-from .serializers import ProductSerializer,OwnerSerialzer,CartSerializer,CartItemSerilizer
+from .serializers import (ProductSerializer,
+                          OwnerSerialzer,CartSerializer,
+                          ProductMessageSerializer,
+                          CartItemSerilizer)
 from .models import *
 
 
@@ -139,6 +145,10 @@ class OwnerDeleteProduct(APIView):
 
 class CartView(generics.RetrieveAPIView):
     serializer_class=CartSerializer
+    @swagger_auto_schema(
+    tags=["Cart"],
+    operation_description="Get the cart for the authenticated user"
+)
     def get_object(self):
         user=self.request.user  if self.request.user.is_authenticated else None
         session_key=self.request.session.session_key or self.request.session.create()
@@ -177,3 +187,9 @@ class AddToCartView(generics.CreateAPIView):
             cart_item.save()
 
         serializer.instance = cart_item
+
+
+
+
+
+
