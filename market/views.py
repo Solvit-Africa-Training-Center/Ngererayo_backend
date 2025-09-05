@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets,status,generics
 from rest_framework.views import APIView
 from rest_framework import permissions
+from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 
@@ -22,7 +23,15 @@ class OwnerView(viewsets.ModelViewSet):
     permission_classes=[permissions.IsAuthenticated]
 
 
-
+class ProductView(APIView):
+    permission_classes=[AllowAny]
+    def get(self, request):
+        try:
+            product=Product.objects.all().order_by(' created_at')[:6]
+            serializer=ProductSerializer(product,many=True)
+            return Response(serializer.data)
+        except Product.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class ProductListView(APIView):
     def get(self, request):
@@ -160,34 +169,37 @@ class CartView(generics.RetrieveAPIView):
     
 
 
-
 class AddToCartView(generics.CreateAPIView):
     serializer_class = CartItemSerilizer
 
-    def perform_create(self, serializer):
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
         user = self.request.user if self.request.user.is_authenticated else None
-        session_key = self.request.session.session_key
-        if not session_key:
-            self.request.session.create()
+        session_key = self.request.session.session_key or self.request.session.create()
 
-        
-        cart, _ = Cart.objects.get_or_create(user=user)
+        cart, _ = Cart.objects.get_or_create(
+            user=user if user else None,
+            session_key=None if user else session_key
+        )
+        context["cart"] = cart
+        return context
 
+    def perform_create(self, serializer):
+        cart = self.get_serializer_context()["cart"]
         product = serializer.validated_data["product"]
         quantity = serializer.validated_data["quantity"]
 
-        
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
             defaults={"quantity": quantity}
         )
+
         if not created:
             cart_item.quantity += quantity
             cart_item.save()
 
         serializer.instance = cart_item
-
 
 
 

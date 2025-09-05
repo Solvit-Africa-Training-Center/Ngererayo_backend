@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import (Product,Owner,
                      ProductMessage,
                      ProductComments,
+                     Order,RequestTobeOwer,
                      CartItem, Cart)
 from accounts.models import CustomUser
 
@@ -42,8 +43,26 @@ class CartItemSerilizer(serializers.ModelSerializer):
         model= CartItem
         fields=["id","product_id", "quantity", "product"]
 
+    def validate(self, data):
+         product=data['product']
+         quantity=data["quantity"]
 
+         if quantity > product.quantity:
+             raise serializers.ValidationError({"quantity":f" only {product.quantity} available products in stock"})
+         cart=self.context.get("cart")
+         if cart:
+             existing_item=CartItem.objects.filter(cart=cart,product=product).first()
+             if existing_item:
+                 new_total_quantity=existing_item.quantity+quantity
+                 if new_total_quantity > product.quantity:
+                     raise serializers.ValidationError({"quantity":f" you already have {existing_item.quantity} in cart   and only {product.quantity} available products in stock"})
+                 existing_item.quantity=new_total_quantity
+                 existing_item.save()
 
+  
+
+         return data     
+    
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -54,6 +73,67 @@ class CartSerializer(serializers.ModelSerializer):
         fields=["id","user","item","session_key"]
 
 
+    # ...................... place order serializer ........................................
+
+
+class OrderSerialzier(serializers.ModelSerializer):
+    class Meta:
+        model=Order
+        fields=["id","user","cart","address","created_at"]
+        read_only_fields = ["id", "user", "created_at"]
+    def create(self, validated_data):
+        request=self.context["request"]
+        user=request.user
+        cart=validated_data["cart"]
+
+
+        if   cart.cartitem_set.exists():
+            raise serializers.ValidationError({"cart":f"you can not place order without any product in cart"})
+        
+
+
+
+        for item in cart.cartitem_set.all():
+            if item.quantity >item.product.quantity:
+                raise serializers.ValidationError(f"Not enough stock for {item.product.product_name} but available {item.product.quantity} requested {item.quantity}")
+            
+
+
+
+
+        for item in cart.cartitem_set.all():
+            item.product.quantity -=item.quantity
+            item.product.save()
+
+
+
+
+        order=Order.objects.create(user=user,**validated_data)
+        cart.cartitem_set.all().delete()
+        return order
+
+
+
+
+
+class RequestTobeOwerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=RequestTobeOwer
+        fields=["id","user","farming_name","location","license"]
+        read_only_fields = ["id", "user"]
+    def create(self, validated_data):
+        request = self.context.get("request")
+        return RequestTobeOwer.objects.create(user=request.user, **validated_data)
+
+             
+
+
+
+
+
+
+
+
 
 
 class ProductMessageSerializer(serializers.ModelSerializer):
@@ -62,3 +142,14 @@ class ProductMessageSerializer(serializers.ModelSerializer):
      class Meta:
          model=ProductMessage
          fields=["id","sender","receiver","message","created_at","is_read","parent"]
+
+
+
+
+class ProductCommentsSerializer(serializers.ModelSerializer):
+    user=serializers.ReadOnlyField(source='user.username')
+    product=serializers.ReadOnlyField(source='product.product_name')
+    class Meta:
+        model=ProductComments
+        fields=["id","user","product","comment","created_at","updated_at"]
+

@@ -4,10 +4,10 @@ from rest_framework import status,generics
 from rest_framework.views import APIView
 from rest_framework import permissions
 from django.core.exceptions import PermissionDenied
-from .models import ProductMessage, Product
+from .models import ProductMessage, Product,ProductComments
 from django.shortcuts import get_object_or_404
 
-from .serializers import  ProductMessageSerializer
+from .serializers import  ProductMessageSerializer,ProductCommentsSerializer
 
 
 
@@ -97,7 +97,98 @@ class ReplayMessage(APIView):
             "message": reply_message.message,
             "created_at": reply_message.created_at
         }, status=status.HTTP_201_CREATED)
+class GetSendMessage(APIView):
+    def get(self,request,product_id):
+        message=ProductMessage.objects.filter(product_id=product_id)
+        serializer=ProductMessageSerializer(message,many=True)
+        return Response(serializer.data)
+
+class GetReplyMessage(APIView):
+    def get(self, request, message_id):
+         replies=ProductMessage.objects.filter(parent_id=message_id)
+         serializer = ProductMessageSerializer(replies, many=True)
+         return Response(serializer.data)
+
+class SendProductCommentsView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def post(self, request, product_id):
+        try:
+            comment=request.data.get("comment")
+            if not comment:
+                return Response({"error": "Comment is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            product = get_object_or_404(Product, id=product_id)
+            user = request.user if request.user.is_authenticated else None
+
+            comment = ProductComments.objects.create(
+                product=product,
+                user=user,
+                comment=comment
+            )
+
+            return Response({
+                "id": comment.id,
+                "product": product.product_name,
+                "user": user.username if user else "Anonymous",
+                "comment": comment.comment,
+                "created_at": comment.created_at,
+                "updated_at": comment.updated_at
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class ReplyProductComments(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def post(self,request,comment_id):
+        try:
+            replay_comment=request.data.get("comment")
+            if not replay_comment:
+                return Response({"error": "Comment is required"}, status=status.HTTP_400_BAD_REQUEST)
+            original_comment=ProductComments.objects.filter(id=comment_id).first()
+            if not original_comment:
+                return Response({"error": "Comment not found"}, status=status.HTTP_404_NOT_FOUND)
+            user = request.user if request.user.is_authenticated else None
+            if not user:
+                return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            reply_comment = ProductComments.objects.create(
+                product=original_comment.product,
+                user=user,
+                comment=replay_comment,
+                parent=original_comment
+            )
+            return Response({
+                "id": reply_comment.id,
+                "product": reply_comment.product.product_name,
+                "user": user.username,
+                "comment": reply_comment.comment,
+                "created_at": reply_comment.created_at,
+                "updated_at": reply_comment.updated_at
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class GetProductCommentsView(APIView):
     
 
+    def get(self, request, product_id):
+        comments = ProductComments.objects.filter(product_id=product_id, parent=None)
+        serializer = ProductCommentsSerializer(comments, many=True)
+        return Response(serializer.data)
 
 
+class GetProductCommentsReplyView(APIView):
+    
+
+    def get(self, request, comment_id):
+        replies = ProductComments.objects.filter(parent_id=comment_id)
+        serializer = ProductCommentsSerializer(replies, many=True)
+        return Response(serializer.data)
