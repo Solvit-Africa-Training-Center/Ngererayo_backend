@@ -23,11 +23,11 @@ class Product(models.Model):
     price=models.DecimalField(max_digits=10, decimal_places=2)
     quantity=models.PositiveIntegerField()
     product_image=models.ImageField(upload_to='product_images')
+    created_at=models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at=models.DateTimeField(auto_now=True, null=True, blank=True)
     class Meta:
         verbose_name="Product",
         verbose_name_plural="Products"
-
-
     def __str__(self):
         return self.product_name
 
@@ -100,9 +100,80 @@ class ProductComments(models.Model):
     comment = models.TextField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name="ProductComment"
         verbose_name_plural="ProductComments"
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.product.product_name}"
+    
+
+
+
+
+
+class Consultant(models.Model):
+    user=models.OneToOneField(CustomUser,on_delete=models.CASCADE)
+    location=models.CharField(max_length=200)
+    class Meta:
+        verbose_name="Consultant"
+        verbose_name_plural="Consultants"
+    def __str__(self):
+        return self.user.first_name     
+
+
+class ConsultantPost(models.Model):
+    consultant=models.ForeignKey(Consultant,on_delete=models.CASCADE)
+    post_title=models.CharField(max_length=100)
+    post_description=models.TextField()
+    post_image=models.ImageField(upload_to='post_images')
+    created_at=models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name="ConsultantPost"
+        verbose_name_plural="ConsultantPosts"
+    def __str__(self):
+        return self.post_title
+
+
+
+class RequestTobeOwer(models.Model):
+    STATUS_CHOICES=[
+        ("pending","pending"),
+        ("approved","approved"),
+        ("rejected","rejected")
+    ]
+    user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    farming_name=models.CharField(max_length=100)
+    location=models.CharField(max_length=200)
+    license=models.FileField(upload_to='license_files')
+    status=models.CharField(max_length=10,choices=STATUS_CHOICES,default="pending")
+    class Meta:
+        verbose_name="Request to be Owner"
+        verbose_name_plural="Requests to be Owners"
+    def __str__(self):
+        return f"Request to be owner of {self.farming_name} by {self.user.username}"
+
+
+
+
+
+class Payment(models.Model):
+
+    Status_Choice=[
+        ('Pending','Pending'),
+        ('Completed','Completed'),
+        ('Failed','Failed')
+    ]
+    order=models.OneToOneField(Order,on_delete=models.CASCADE, related_name='payment',null=True,blank=True)
+    user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    amount=models.DecimalField(max_digits=10, decimal_places=2)
+    status=models.CharField(max_length=10,choices=Status_Choice,default='Pending')
+    payment_date=models.DateTimeField(auto_now_add=True)
+    transaction_id=models.CharField(max_length=100, unique=True)
+    class Meta:
+        verbose_name="Payment"
+        verbose_name_plural="Payments"
+    def __str__(self):
+        return f"Payment of {self.amount} by {self.user.username} on {self.payment_date}"
+    
