@@ -37,8 +37,8 @@ router.register("owners",OwnerView,basename="owners")
 urlpatterns=[
     path("",include(router.urls)),
     path("latest-products/",ProductView.as_view({'get':'list'}), name="latest-products"),
-    path("all-products/",ProductListView.as_view()),
-    path("product/<int:product_id>/",ProductDetailView.as_view()),
+    path("all-products/",ProductListView.as_view(),name="product-list"),
+    path("product/<int:product_id>/",ProductDetailView.as_view(), name="product-detail" ),
     path("Requested-owner/",RequestTobeOwnerView.as_view(), name ="request-owner"),
     path("owner/<int:owner_id>/products/",OwnerProductsView.as_view()),
 path('owner-product/<int:product_id>/edit/', OwnerEditProductView.as_view(), name='owner-edit-product'),
