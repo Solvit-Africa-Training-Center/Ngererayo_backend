@@ -17,10 +17,11 @@ from .models import *
 
 
 
-class OwnerView(viewsets.ModelViewSet):
-    queryset = Owner.objects.all()
-    serializer_class = OwnerSerialzer
-    permission_classes=[permissions.IsAuthenticated]
+class AllProductOwnersView(APIView):
+    def get(self, request):
+        count = Owner.objects.count()
+        return Response({"owners_count": count})
+
 
 
 class ProductView(APIView):

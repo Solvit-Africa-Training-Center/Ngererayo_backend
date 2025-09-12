@@ -1,6 +1,7 @@
 
 from django.urls import path,include
 from rest_framework import routers
+from .paymeny_views import CreateCheckoutSession,stripe_webhook
 from .placeorder import PlaceOrderView
 from .RequestedFarmer import RequestTobeOwnerView
 from .messaging_views import (ProductMessageView,
@@ -16,9 +17,10 @@ from .messaging_views import (ProductMessageView,
 
 
 from .views import (ProductView,
-                    OwnerView,
+                    # OwnerView,
                     OwnerProductsView,
                     ProductListView,
+                    AllProductOwnersView,
                     ProductDetailView,
                     OwnerDeleteProduct,
                     ProductView,
@@ -28,7 +30,7 @@ from .views import (ProductView,
 
 router=routers.DefaultRouter()
 router.register("products",ProductView,basename="products")
-router.register("owners",OwnerView,basename="owners")
+# router.register("owners",OwnerView,basename="owners")
 
 
 
@@ -40,6 +42,7 @@ urlpatterns=[
     path("all-products/",ProductListView.as_view(),name="product-list"),
     path("product/<int:product_id>/",ProductDetailView.as_view(), name="product-detail" ),
     path("Requested-owner/",RequestTobeOwnerView.as_view(), name ="request-owner"),
+    path("owners/",AllProductOwnersView.as_view(), name="all-owners"),
     path("owner/<int:owner_id>/products/",OwnerProductsView.as_view()),
 path('owner-product/<int:product_id>/edit/', OwnerEditProductView.as_view(), name='owner-edit-product'),
 path("owner-product/<int:product_id>/delete/", OwnerDeleteProduct.as_view(), name='owner-delete-product'),
@@ -57,6 +60,8 @@ path("comments/<int:product_id>/send/", SendProductCommentsView.as_view(), name=
 path("comments/<int:comment_id>/reply/", ReplyProductComments.as_view(), name="reply-comment"),
 path("comments/<int:product_id>/", GetProductCommentsView.as_view(), name="get-comments"),
 path("comments/replies/<int:comment_id>/", GetProductCommentsReplyView.as_view(), name="get-comment-replies"),
+path("create-checkout-session/",CreateCheckoutSession.as_view(),name="create-checkout-session"),
+path("stripe-webhook/",stripe_webhook,name="stripe-webhook")
 
 
 ]

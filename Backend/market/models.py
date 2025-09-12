@@ -37,6 +37,11 @@ class Cart(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,null=True,blank=True)
     session_key=models.CharField(max_length=40,null=True,blank=True)
     products = models.ManyToManyField(Product, through='CartItem')
+
+
+    @property
+    def total_amount(self):
+        return sum(item.product.price * item.quantity for item in self.cartitem_set.all())
     class Meta:
         verbose_name="Cart"
         verbose_name_plural="Carts"

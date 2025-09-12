@@ -106,7 +106,7 @@ class OrderSerialzier(serializers.ModelSerializer):
             item.product.save()
 
 
-
+        # user = self.context['request'].user
 
         order=Order.objects.create(user=user,**validated_data)
         cart.cartitem_set.all().delete()

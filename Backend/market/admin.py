@@ -88,6 +88,11 @@ class ConsultantPostAdmin(admin.ModelAdmin):
     list_display=["post_title","created_at"]
 
 
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display=["user","amount","status","payment_date","transaction_id"]
+    
+
 
 
 @admin.register(RequestTobeOwer)
