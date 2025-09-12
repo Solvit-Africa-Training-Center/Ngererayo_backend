@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -95,13 +96,14 @@ STRIPE_WEBHOOK_SECRET=os.getenv("STRIPE_WEBHOOK_SECRET")
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+DATABASES_URL = os.getenv('DATABASE_URL')
+if DATABASES_URL:
+    
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASES_URL)
+    }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+
 
 
 # Password validation
