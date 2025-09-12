@@ -82,8 +82,13 @@ TEMPLATES = [
     },
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+"https://ngererayo-backend.onrender.com/"
+    "http://localhost:8080",
+]
 
-
+CORS_ALLOWED_ORIGINS_ALL = True
 
 WSGI_APPLICATION = 'ngererayo.wsgi.application'
 
