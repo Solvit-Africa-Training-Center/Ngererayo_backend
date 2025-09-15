@@ -84,7 +84,7 @@ TEMPLATES = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-"https://ngererayo-backend.onrender.com/"
+"https://ngererayo-backend.onrender.com",
     "http://localhost:8080",
 ]
 

@@ -24,6 +24,8 @@ from .views import (ProductView,
                     ProductDetailView,
                     OwnerDeleteProduct,
                     ProductView,
+                    DeleteItemFromcartView,
+                    UpdateQuantityOnCartView,
                     OwnerEditProductView,CartView, AddToCartView)
 
 
@@ -47,7 +49,10 @@ urlpatterns=[
 path('owner-product/<int:product_id>/edit/', OwnerEditProductView.as_view(), name='owner-edit-product'),
 path("owner-product/<int:product_id>/delete/", OwnerDeleteProduct.as_view(), name='owner-delete-product'),
 path('cart/', CartView.as_view(), name='cart'),
+path('cart_delete/<int:cart_item_id>/', DeleteItemFromcartView.as_view(), name='cart_delete'),
+
 path('cart_add/', AddToCartView.as_view(), name='cart_add'),
+path('cart_update/<int:cart_item_id>/', UpdateQuantityOnCartView.as_view(), name='cart_update'),
 
 path("place-order/",PlaceOrderView.as_view(), name="place-order"),
 path("product-message/<int:product_id>/",ProductMessageView.as_view(),name="product-messages"),
