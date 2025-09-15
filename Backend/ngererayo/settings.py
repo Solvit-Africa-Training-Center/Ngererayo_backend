@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'accounts',
     "corsheaders",
     'drf_yasg',
-    'market'
+    'market',
+    'welcome',
 
 ]
 

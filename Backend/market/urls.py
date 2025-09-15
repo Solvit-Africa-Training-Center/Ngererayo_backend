@@ -24,6 +24,7 @@ from .views import (ProductView,
                     ProductDetailView,
                     OwnerDeleteProduct,
                     ProductView,
+                    # ApiLandingPage,
                     DeleteItemFromcartView,
                     UpdateQuantityOnCartView,
                     OwnerEditProductView,CartView, AddToCartView)
@@ -40,6 +41,7 @@ router.register("products",ProductView,basename="products")
 
 urlpatterns=[
     path("",include(router.urls)),
+    # path("",ApiLandingPage.as_view(),name="api-landing-page"),
     path("latest-products/",ProductView.as_view({'get':'list'}), name="latest-products"),
     path("all-products/",ProductListView.as_view(),name="product-list"),
     path("product/<int:product_id>/",ProductDetailView.as_view(), name="product-detail" ),
