@@ -12,7 +12,9 @@ from django.core.exceptions import PermissionDenied
 
 from .serializers import (ProductSerializer,
                           OwnerSerialzer,CartSerializer,
+                          CustomerSupportSerializer,
                           ProductMessageSerializer,
+                          TestimonialsSerializer,
                           CartItemSerilizer)
 from .models import *
 
@@ -275,3 +277,31 @@ class UpdateQuantityOnCartView(APIView):
         cart_item.save()
         serializer = CartItemSerilizer(cart_item)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+    # .............Testimonial view .........................
+
+
+
+
+
+class TestimonialView(APIView):
+    def get(self,request):
+        testimonials=Testimonials.objects.all().order_by('-created_at')[:3]
+        serializer=TestimonialsSerializer(testimonials,many=True)
+        return Response(serializer.data)
+
+
+
+
+class CustomerSupportView(APIView):
+    def post(self, request):
+        serializer=CustomerSupportSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+

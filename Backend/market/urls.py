@@ -25,6 +25,8 @@ from .views import (ProductView,
                     OwnerDeleteProduct,
                     ProductView,
                     # ApiLandingPage,
+      CustomerSupportView,
+                    TestimonialView,
                     DeleteItemFromcartView,
                     UpdateQuantityOnCartView,
                     OwnerEditProductView,CartView, AddToCartView)
@@ -68,7 +70,9 @@ path("comments/<int:comment_id>/reply/", ReplyProductComments.as_view(), name="r
 path("comments/<int:product_id>/", GetProductCommentsView.as_view(), name="get-comments"),
 path("comments/replies/<int:comment_id>/", GetProductCommentsReplyView.as_view(), name="get-comment-replies"),
 path("create-checkout-session/",CreateCheckoutSession.as_view(),name="create-checkout-session"),
-path("stripe-webhook/",stripe_webhook,name="stripe-webhook")
+path("stripe-webhook/",stripe_webhook,name="stripe-webhook"),
+path("testimonials/",TestimonialView.as_view(),name="testimonials"),
+path("customer-support/",CustomerSupportView.as_view(),name="customer-support")
 
 
 ]

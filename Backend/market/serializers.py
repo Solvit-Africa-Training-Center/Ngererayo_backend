@@ -3,7 +3,9 @@ from rest_framework import serializers
 from .models import (Product,Owner,
                      ProductMessage,
                      ProductComments,
+                     Testimonials,
                      Order,RequestTobeOwer,
+                     CustomerSupport,
                      CartItem, Cart)
 from accounts.models import CustomUser
 
@@ -152,4 +154,42 @@ class ProductCommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model=ProductComments
         fields=["id","user","product","comment","created_at","updated_at"]
+
+
+
+
+
+class TestimonialsSerializer(serializers.ModelSerializer):
+      class Meta:
+          model=Testimonials
+          fields=["id","user","content","created_at"]
+          read_only_fields = ["id", "user", "created_at"]
+
+
+
+
+
+class CustomerSupportSerializer(serializers.ModelSerializer):
+    full_name=serializers.CharField(required=True)
+    email=serializers.EmailField(required=True)
+    status=serializers.ChoiceField(choices=CustomerSupport.STATUS_CHOICES,required=True)
+    subject=serializers.CharField(required=True)
+    message=serializers.CharField(required=True)
+    class Meta:
+        model=CustomerSupport
+        fields=["id","full_name","email","status","subject","message","created_at"]
+
+
+
+    def create(self, validated_data):
+        support=CustomerSupport.objects.create(
+            full_name=validated_data["full_name"],
+            email=validated_data["email"],
+            status=validated_data["status"],
+            subject=validated_data["subject"],
+            message=validated_data["message"],
+
+        )
+        return support    
+
 

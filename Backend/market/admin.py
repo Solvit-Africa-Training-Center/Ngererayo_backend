@@ -8,7 +8,7 @@ from django.utils.html import strip_tags
 from .models import (
     Product,Cart,CartItem,Order,Owner,ProductComments,ProductMessage
     ,Consultant,ConsultantPost,RequestTobeOwer
-    ,Payment
+    ,Payment,Testimonials,CustomerSupport
 )
 
 # Register your models here.
@@ -147,8 +147,25 @@ class    RequestTobeOwerAdmin(admin.ModelAdmin):
                 self.send_seller_email(req.user,approved=False)
                 req.delete()
                 self.message_user(request, "Request rejected successfully")
-        reject_request.short_description="rejected selected request"                    
-                
+        reject_request.short_description="rejected selected request"  
+
+
+
+
+
+@admin.register(Testimonials)
+class TestimonialsAdmin(admin.ModelAdmin):
+    list_display=["user","testimonial","created_at"]
+    search_fields=["user__username","testimonial"]
+
+
+
+
+
+@admin.register(CustomerSupport)
+class CustomerSupportAdmin(admin.ModelAdmin):
+    list_display=["full_name","email","status","subject","created_at"]
+    search_fields=["full_name","email","status","subject"]
 
 
 

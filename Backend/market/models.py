@@ -182,3 +182,36 @@ class Payment(models.Model):
     def __str__(self):
         return f"Payment of {self.amount} by {self.user.username} on {self.payment_date}"
     
+
+
+
+
+
+class Testimonials(models.Model):
+    user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    testimonial=models.TextField()
+    created_at=models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name="Testimonial"
+        verbose_name_plural="Testimonials"
+
+
+
+
+class CustomerSupport(models.Model):
+    STATUS_CHOICES=[
+         ("general_enquiry","general_enquiry"),
+         ("product_support","product_support"),
+         ("business","business")
+     ]
+    full_name=models.CharField(max_length=255)
+    email=models.EmailField()
+    status=models.CharField(max_length=20,choices=STATUS_CHOICES,default="general_enquiry")
+    subject=models.CharField(max_length=255)
+    message=models.TextField()
+    created_at=models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name="CustomerSupport"
+        verbose_name_plural="CustomerSupports"
+
+    
