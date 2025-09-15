@@ -180,13 +180,11 @@ class DeleteItemFromcartView(APIView):
         except CartItem.DoesNotExist:
             return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
         user = request.user if request.user.is_authenticated else None
-        # session_key = request.session.session_key or request.session.create()
+        
         if cart_item.cart.user:
             if cart_item.cart.user != user:
                 raise PermissionDenied("You do not have permission to modify this cart item.")
-        # else:
-            # if cart_item.cart.session_key != session_key:
-                # raise PermissionDenied("You do not have permission to modify this cart item.")
+        
 
         cart_item.delete()
         return Response({"message": "Item removed from cart"}, status=status.HTTP_200_OK)
