@@ -2,6 +2,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework import status,generics
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions
 from django.core.exceptions import PermissionDenied
 from .models import ProductMessage, Product,ProductComments
@@ -32,14 +33,17 @@ class ProductMessageView(generics.ListCreateAPIView):
 
 
 
+
 class SendProductMessageView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, product_id):
         message_text = request.data.get("message")
         if not message_text:
             return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         product = get_object_or_404(Product, id=product_id)
-        sender = request.user if request.user.is_authenticated else None
+        sender = request.user                 
         receiver = product.owner.user
 
         if receiver is None:
@@ -55,12 +59,11 @@ class SendProductMessageView(APIView):
         return Response({
             "id": message.id,
             "product": product.product_name,
-            "sender": sender.username if sender else "Anonymous",
+            "sender": sender.username,
             "receiver": receiver.username,
             "message": message.message,
             "created_at": message.created_at
         }, status=status.HTTP_201_CREATED)
-
 
 
 class GetMessageYouSent(APIView):
