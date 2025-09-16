@@ -53,6 +53,20 @@ class VerifyOtpView(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ResendOtpView(APIView):
+      permission_classes=[AllowAny]
+      def post(self, request, *args, **kwargs):
+            email=request.data["email"]
+            user=CustomUser.objects.get(email=email)
+            otp=user.generate_otp()
+            send_mail(
+                  subject="Welcome to ngererayo platform",
+                  message=f"Hello {user.first_name},\n\nThank you for registering on ngererayo platform. This is your OTP for activating your account: {user.otp}",
+                  from_email="gihozoismail@gmail.com",
+                  recipient_list=[user.email]
+            )
+            return Response({"message": "OTP resent successfully."}, status=status.HTTP_200_OK)
+
 
 
 
