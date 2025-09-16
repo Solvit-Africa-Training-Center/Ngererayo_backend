@@ -75,6 +75,22 @@ class ProductView(viewsets.ModelViewSet):
         serialzier.save(owner=owner)
 
 
+class OwnerAddProduct(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def post(self, request,*args,**kwargs):
+        try:
+            owner=Owner.objects.get(user=request.user)
+        except Owner.DoesNotExist:
+            return Response({"error":"Only owners can add products"},status=status.HTTP_403_FORBIDDEN)
+        serializer=ProductSerializer(data=request.data)
+        if  serializer.is_valid():
+            product=serializer.save(owner=owner)
+            return Response(ProductSerializer(product).data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+        
+
+
 
 
 class OwnerProductsView(generics.ListAPIView):

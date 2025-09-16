@@ -23,15 +23,13 @@ class OwnerSerialzer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    owner=OwnerSerialzer(read_only=True)
-    owner_id=serializers.PrimaryKeyRelatedField(queryset=Owner.objects.all(),source='owner',write_only=True)
-    
 
     class Meta:
         model=Product
-        fields=["id","product_name","description","price","quantity","product_image","owner","owner_id"]
+        fields=["id","product_name","description","price","quantity","product_image","owner"]
         extra_kwargs = {
            "id": {"read_only": True},
+           "owner": {"read_only": True},
        }
 
 
