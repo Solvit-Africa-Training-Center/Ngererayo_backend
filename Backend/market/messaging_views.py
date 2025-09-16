@@ -65,7 +65,28 @@ class SendProductMessageView(APIView):
             "created_at": message.created_at
         }, status=status.HTTP_201_CREATED)
 
+class DeleteProductMessageView(APIView):
+    def delete(self, request, message_id):
+        message = get_object_or_404(ProductMessage, id=message_id)
+        if message.sender != request.user:
+            return Response({"error": "You do not have permission to delete this message."}, status=status.HTTP_403_FORBIDDEN)
+        message.delete()
+        return Response({"message": "Message deleted successfully."}, status=status.HTTP_200_OK)
 
+
+
+class EditProductMessageView(APIView):
+    permission_classes = [IsAuthenticated]
+    def put(self, request, message_id):
+        message = get_object_or_404(ProductMessage, id=message_id)
+        if message.sender != request.user:
+            return Response({"error": "You do not have permission to edit this message."}, status=status.HTTP_403_FORBIDDEN)
+        new_text = request.data.get("message")
+        if not new_text:
+            return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
+        message.message = new_text
+        message.save()
+        return Response({"message": "Message updated successfully."}, status=status.HTTP_200_OK)
 class GetMessageYouSent(APIView):
     permission_classes=[permissions.IsAuthenticated]
     def get(self, request,product_id):
