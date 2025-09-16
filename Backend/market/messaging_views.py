@@ -63,6 +63,15 @@ class SendProductMessageView(APIView):
 
 
 
+class GetMessageYouSent(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def get(self, request,product_id):
+        messages=ProductMessage.objects.filter(product_id=product_id,sender=request.user)
+        serializer=ProductMessageSerializer(messages,many=True)
+        return Response(serializer.data)
+    
+    
+
 
 class ReplayMessage(APIView):
     permission_classes=[permissions.IsAuthenticated]
