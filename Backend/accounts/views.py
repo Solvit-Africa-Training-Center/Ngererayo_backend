@@ -1,4 +1,9 @@
 from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.conf import settings
+import datetime
 from rest_framework import viewsets,generics,status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +16,8 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .serializers import (RegisterUserSerializer,
                           AuthenticateUserSerializer,
                           UserSerializer,
+                          ForgotPasswordSerializer,
+                          ResetPasswordSerializer,
                           VerifyOtpSerializer)
 from .models import CustomUser
 
@@ -26,12 +33,22 @@ class RegisterUserView(viewsets.ModelViewSet):
             if serializer.is_valid():
                   user=serializer.save()
                   user.generate_otp()
-                  send_mail(
+                  context={
+                        "fist_name":user.first_name,
+                        "last_name":user.last_name,
+                        "otp":user.otp,
+                        "current_year":datetime.datetime.now().year,
+                  }
+                  html_message =render_to_string("welcome_email.html",context)
+                  plain_message=strip_tags(html_message)
+                  email=EmailMultiAlternatives(
                         subject="Welcome to ngererayo platform",
-                        message=f"Hello {user.first_name},\n\nThank you for registering on ngererayo platform. This is your OTP for activating your account: {user.otp}",
-                        from_email="gihozoismail@gmail.com",
-                        recipient_list=[user.email]
+                        body=plain_message,
+                        from_email="Ngererayo <gihozoismail@gmail.com>",
+                        to=[user.email],
                   )
+                  email.attach_alternative(html_message, "text/html")
+                  email.send()
                   return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       
@@ -90,6 +107,7 @@ class LoginView(viewsets.ModelViewSet):
             return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       
 
+      
 
 
 
@@ -117,3 +135,54 @@ class CurrentLoginUserView(APIView):
                   serializer = UserSerializer(user)
                   return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+      
+
+
+
+
+
+
+
+
+class  ForgotPasswordView(APIView):
+      permission_classes=[AllowAny]
+      def post(self, request, *args, **kwargs):
+            serializer=ForgotPasswordSerializer(data=request.data)
+            if  serializer.is_valid():
+                  email=serializer.validated_data["email"]
+                  user=CustomUser.objects.get(email=email)
+                  otp=user.generate_otp()
+                  context={
+                        "fist_name":user.first_name,
+                        "last_name":user.last_name,
+                        "otp":user.otp,
+                        "current_year":datetime.datetime.now().year,
+                  }
+                  html_message =render_to_string("forgot_password.html",context)
+                  plain_message=strip_tags(html_message)
+                  email=EmailMultiAlternatives(
+                        subject="Password Reset Request",
+                        body=plain_message,
+                        from_email="Ngererayo <gihozoismail@gmail.com>",
+                        to=[user.email],
+                  )
+                  email.attach_alternative(html_message, "text/html")
+                  email.send()
+                  return Response({"message": "OTP for reset password sent successfully."}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+class ResetPasswordView(APIView):
+      permission_classes=[AllowAny]
+      def post(self, request):
+            serializer=ResetPasswordSerializer(data=request.data)
+            if serializer.is_valid():
+                  serializer.save()
+                  return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                        
+                  

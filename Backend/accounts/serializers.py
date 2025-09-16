@@ -90,3 +90,40 @@ class AuthenticateUserSerializer(serializers.ModelSerializer):
           data["user"]=user
           return data
                
+
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+     email=serializers.EmailField(required=True)
+     def validate_email(self, value):
+        if not CustomUser.objects.filter(email__iexact=value.strip()).exists():
+            raise serializers.ValidationError("No account found with this email.")
+        return value.strip().lower()
+     
+
+
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+     email=serializers.EmailField(required=True)
+     otp=serializers.CharField(required=True)
+     new_password=serializers.CharField(write_only=True, required=True, max_length=128)
+
+
+
+     def validate(self, data):
+          try:
+               user=CustomUser.objects.get(email=data["email"])
+          except CustomUser.DoesNotExist:
+               raise serializers.ValidationError("user with this email does not exist")
+          if not user.verify_otp(data["otp"]):
+               raise serializers.ValidationError("invalid otp or expired")
+          return data
+     
+     def save(self):
+          user=CustomUser.objects.get(email=self.validated_data["email"])
+          user.set_password(self.validated_data["new_password"])
+          user.otp=None
+          user.otp_expiry=None
+          user.save()
+          return user

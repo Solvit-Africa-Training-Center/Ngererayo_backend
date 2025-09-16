@@ -121,7 +121,7 @@ class OrderSerialzier(serializers.ModelSerializer):
 class RequestTobeOwerSerializer(serializers.ModelSerializer):
     class Meta:
         model=RequestTobeOwer
-        fields=["id","user","farming_name","location","license"]
+        fields=["id","user","farming_name","location","license","national_id","status"]
         read_only_fields = ["id", "user"]
     def create(self, validated_data):
         request = self.context.get("request")

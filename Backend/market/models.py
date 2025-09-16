@@ -150,7 +150,8 @@ class RequestTobeOwer(models.Model):
     ]
     user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     farming_name=models.CharField(max_length=100)
-    location=models.CharField(max_length=200)
+    location=models.CharField(max_length=200) 
+    national_id=models.FileField(upload_to='national_id_files',null=True,blank=True)
     license=models.FileField(upload_to='license_files')
     status=models.CharField(max_length=10,choices=STATUS_CHOICES,default="pending")
     class Meta:

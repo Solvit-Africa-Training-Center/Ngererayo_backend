@@ -30,6 +30,7 @@ class CustomUser(AbstractUser):
         self.otp="".join(random.choices(string.digits,k=6))
         self.otp_expiry=timezone.now() + timezone.timedelta(minutes=10)
         self.save(update_fields=["otp","otp_expiry"])
+        return self.otp
 
 
     def verify_otp(self,otp):
