@@ -2,14 +2,16 @@ from rest_framework import serializers
 from .models import CustomUser
 from django.utils import timezone
 from django.contrib.auth import authenticate
-
+from market.models import Owner
+from market.serializers import OwnerSerialzer
 
 
 
 class UserSerializer(serializers.ModelSerializer):
+    owner=OwnerSerialzer(read_only=True)
     class Meta:
         model = CustomUser
-        fields = ["id", "username", "email", "first_name", "last_name", "role", "phone"]
+        fields = ["id", "username", "email", "first_name", "last_name", "role", "phone", "owner"]
 
 class  RegisterUserSerializer(serializers.ModelSerializer):
     first_name=serializers.CharField(required=True)
