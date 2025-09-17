@@ -49,10 +49,15 @@ INSTALLED_APPS = [
     'accounts',
     "corsheaders",
     'drf_yasg',
+
+     'cloudinary',
+    'cloudinary_storage',
     'market',
     'welcome',
 
 ]
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
 
@@ -186,7 +191,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='accounts.CustomUser'   
 
 
-
+CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
 
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"   
