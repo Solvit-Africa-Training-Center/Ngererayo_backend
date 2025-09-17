@@ -4,6 +4,7 @@ from .models import (Product,Owner,
                      ProductMessage,
                      ProductComments,
                      Testimonials,
+                     Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
                      CustomerSupport,
                      CartItem, Cart)
@@ -189,5 +190,45 @@ class CustomerSupportSerializer(serializers.ModelSerializer):
 
         )
         return support    
+
+
+
+
+
+
+
+
+
+class ConsultantPostSerializer(serializers.ModelSerializer):
+     class Meta:
+         model=ConsultantPost
+         fields=["id","consultant","post_title","post_description","post_image","created_at"]
+
+
+     def validate(self, data):
+             if not data.get("post_description") and not data.get("post_image"):
+                 raise serializers.ValidationError("Either post description or post image must be provided.")
+             return data
+
+
+
+
+
+class ConsultantSerializer(serializers.ModelSerializer):
+    user=serializers.StringRelatedField()
+    posts=ConsultantPostSerializer(many=True,read_only=True)
+    followers_count=serializers.SerializerMethodField()
+    class Meta:
+        model=Consultant
+        fields=["id","user","location","posts","followers_count"]
+
+
+    def get_followers_count(self,obj):
+        return obj.followers.count()
+        
+
+
+
+
 
 

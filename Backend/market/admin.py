@@ -7,7 +7,7 @@ from django.utils.html import strip_tags
 
 from .models import (
     Product,Cart,CartItem,Order,Owner,ProductComments,ProductMessage
-    ,Consultant,ConsultantPost,RequestTobeOwer
+    ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow
     ,Payment,Testimonials,CustomerSupport
 )
 
@@ -166,6 +166,16 @@ class TestimonialsAdmin(admin.ModelAdmin):
 class CustomerSupportAdmin(admin.ModelAdmin):
     list_display=["full_name","email","status","subject","created_at"]
     search_fields=["full_name","email","status","subject"]
+    list_per_page=10
+
+
+
+@admin.register(ConsultantFollow)
+class ConsultantFollowAdmin(admin.ModelAdmin):
+    list_display=["user","consultant","created_at"]
+    search_fields=["user__username","consultant__user__username"]
+
+
 
 
 

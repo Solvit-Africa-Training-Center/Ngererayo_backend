@@ -1,6 +1,7 @@
 
 from django.urls import path,include
 from rest_framework import routers
+from .consultant_view import ConsultantListView,FollowConsultantview,FollowConsultantPostView
 from .paymeny_views import CreateCheckoutSession,stripe_webhook
 from .placeorder import PlaceOrderView
 from .RequestedFarmer import RequestTobeOwnerView
@@ -80,7 +81,10 @@ path("comments/replies/<int:comment_id>/", GetProductCommentsReplyView.as_view()
 path("create-checkout-session/",CreateCheckoutSession.as_view(),name="create-checkout-session"),
 path("stripe-webhook/",stripe_webhook,name="stripe-webhook"),
 path("testimonials/",TestimonialView.as_view(),name="testimonials"),
-path("customer-support/",CustomerSupportView.as_view(),name="customer-support")
+path("customer-support/",CustomerSupportView.as_view(),name="customer-support"),
+path("consultants/",ConsultantListView.as_view(),name="consultants"),
+path("consultants/<int:consultant_id>/follow/",FollowConsultantview.as_view(),name="follow-consultant"),
+path("consultants/<int:consultant_id>/follow-post/",FollowConsultantPostView.as_view(),name="follow-consultant-post"),
 
 
 ]

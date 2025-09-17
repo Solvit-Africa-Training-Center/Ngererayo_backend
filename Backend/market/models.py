@@ -131,8 +131,8 @@ class Consultant(models.Model):
 class ConsultantPost(models.Model):
     consultant=models.ForeignKey(Consultant,on_delete=models.CASCADE)
     post_title=models.CharField(max_length=100)
-    post_description=models.TextField()
-    post_image=models.ImageField(upload_to='post_images')
+    post_description=models.TextField(blank=True,null=True)
+    post_image=models.ImageField(upload_to='post_images',blank=True,null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name="ConsultantPost"
@@ -140,6 +140,19 @@ class ConsultantPost(models.Model):
     def __str__(self):
         return self.post_title
 
+
+class ConsultantFollow(models.Model):
+    user=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    consultant=models.ForeignKey(Consultant,on_delete=models.CASCADE,related_name='followers')
+    created_at=models.DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together = ('user', 'consultant')
+        verbose_name="ConsultantFollow"
+        verbose_name_plural="ConsultantFollows"
+
+
+    def __str__(self):
+        return f"{self.user.username} follows {self.consultant.user.username}"    
 
 
 class RequestTobeOwer(models.Model):
