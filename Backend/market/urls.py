@@ -3,7 +3,7 @@ from django.urls import path,include
 from rest_framework import routers
 from .consultant_view import ConsultantListView,FollowConsultantview,FollowConsultantPostView
 from .paymeny_views import CreateCheckoutSession,stripe_webhook
-from .placeorder import PlaceOrderView
+from .placeorder import PlaceOrderView,GetOrdersView
 from .RequestedFarmer import RequestTobeOwnerView
 from .messaging_views import (ProductMessageView,
                               SendProductCommentsView,
@@ -64,6 +64,7 @@ path('cart_add/', AddToCartView.as_view(), name='cart_add'),
 path('cart_update/<int:cart_item_id>/', UpdateQuantityOnCartView.as_view(), name='cart_update'),
 
 path("place-order/",PlaceOrderView.as_view(), name="place-order"),
+path("get-orders/",GetOrdersView.as_view(), name="get-orders"),
 path("product-message/<int:product_id>/",ProductMessageView.as_view(),name="product-messages"),
 # path("product/<int:product_id>/messages/", ProductMessageView.as_view(), name="product-messages"),
 path("product/<int:product_id>/messages/", ProductMessageView.as_view(), name="product-messages"),

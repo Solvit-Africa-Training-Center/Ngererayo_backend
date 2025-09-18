@@ -30,3 +30,13 @@ class PlaceOrderView(APIView):
                 "order": serilaizer.data
             }, status=status.HTTP_201_CREATED)
         return Response(serilaizer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GetOrdersView(APIView):
+    permission_classes =[permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        orders=Order.objects.filter(user=request.user)
+        serilaizer=OrderSerialzier(orders,many=True)
+        return Response(serilaizer.data,status=status.HTTP_200_OK)
