@@ -8,7 +8,7 @@ from django.utils.html import strip_tags
 from .models import (
     Product,Order,Owner,ProductComments,ProductMessage
     ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow
-    ,Payment,Testimonials,CustomerSupport,OrderItem
+    ,Payment,Testimonials,CustomerSupport,OrderItem,RequestTobeConsultant
 )
 
 # Register your models here.
@@ -144,6 +144,55 @@ class    RequestTobeOwerAdmin(admin.ModelAdmin):
 
 
 
+@admin.register(RequestTobeConsultant)
+class RequestTobeConsultantAdmin(admin.ModelAdmin):
+    list_display=["user","location","status"]
+    search_fields=["user__username","location","status"]
+    list_per_page=10
+    actions =["approve_request","reject_request"]
+    def send_consultant_email(self,user, approved=True):
+
+        subject="Consultant request approved" if approved else "Consultant request rejected"
+        context={
+            "subject":subject,
+            "first_name":user.first_name,
+            "last_name":user.last_name,
+            "approved":approved
+
+            
+        } 
+        html_content=render_to_string("emails/consultant_request.html",context)
+        text_content=strip_tags(html_content)
+        email=EmailMultiAlternatives(
+            subject,
+            text_content,
+            "Ngererayo <gihozoismail@gmail.com>",
+            [user.email]
+        )
+        email.attach_alternative(html_content,"text/html")
+        email.send()
+
+    def approve_request(self, request, queryset):
+         for req in queryset:
+                Consultant.objects.create(
+                    user=req.user,
+                    location=req.location,
+
+
+                )
+                req.user.role="consultant"
+                req.user.save()
+                self.send_consultant_email(req.user, approved=True)
+                req.delete()
+                self.message_user(request,"request approved successfully")
+
+    approve_request.short_description = "request approved"
+    def reject_request(self,request,queryset):
+        for req in queryset:
+            self.send_consultant_email(req.user, approved=False)
+            req.delete()
+            self.message_user("request rejected")
+    reject_request.short_description="reject request"                    
 
 
 @admin.register(Testimonials)

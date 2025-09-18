@@ -4,6 +4,7 @@ from .models import (Product,Owner,
                      ProductMessage,
                      ProductComments,
                      Testimonials,
+                     RequestTobeConsultant,
                      Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
                      CustomerSupport,OrderItem,
@@ -192,6 +193,14 @@ class ConsultantSerializer(serializers.ModelSerializer):
         return obj.followers.count()
         
 
+
+
+
+class RequestTobeConsultantSerializer(serializers.ModelSerializer):
+     class Meta:
+         model=RequestTobeConsultant
+         fields=["id","user","national_id","location","license"]
+         read_only_fields=["id","user"]
 
 
 
