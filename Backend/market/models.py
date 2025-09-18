@@ -70,7 +70,6 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
@@ -81,6 +80,16 @@ class Order(models.Model):
         return f"Order {self.id} for {self.user.username}"
     
 
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    class Meta:
+        verbose_name="OrderItem"
+        verbose_name_plural="OrderItems"
+    def __str__(self):
+        return f"{self.quantity} of {self.product.product_name} in Order {self.order.id}"
 
 
 class ProductMessage(models.Model):

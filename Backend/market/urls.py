@@ -84,7 +84,7 @@ path("testimonials/",TestimonialView.as_view(),name="testimonials"),
 path("customer-support/",CustomerSupportView.as_view(),name="customer-support"),
 path("consultants/",ConsultantListView.as_view(),name="consultants"),
 path("consultants/<int:consultant_id>/follow/",FollowConsultantview.as_view(),name="follow-consultant"),
-path("consultants/<int:consultant_id>/follow-post/",FollowConsultantPostView.as_view(),name="follow-consultant-post"),
+path("consultants/following/post/",FollowConsultantPostView.as_view(),name="follow-consultant-post"),
 
 
 ]

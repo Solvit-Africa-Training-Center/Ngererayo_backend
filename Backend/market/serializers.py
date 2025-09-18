@@ -6,7 +6,7 @@ from .models import (Product,Owner,
                      Testimonials,
                      Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
-                     CustomerSupport,
+                     CustomerSupport,OrderItem,
                      CartItem, Cart)
 from accounts.models import CustomUser
 
@@ -77,41 +77,43 @@ class CartSerializer(serializers.ModelSerializer):
     # ...................... place order serializer ........................................
 
 
-class OrderSerialzier(serializers.ModelSerializer):
+
+class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Order
-        fields=["id","user","cart","address","created_at"]
-        read_only_fields = ["id", "user", "created_at"]
-    def create(self, validated_data):
-        request=self.context["request"]
-        user=request.user
-        cart=validated_data["cart"]
-
-
-        if   cart.cartitem_set.exists():
-            raise serializers.ValidationError({"cart":f"you can not place order without any product in cart"})
-        
-
-
-
-        for item in cart.cartitem_set.all():
-            if item.quantity >item.product.quantity:
-                raise serializers.ValidationError(f"Not enough stock for {item.product.product_name} but available {item.product.quantity} requested {item.quantity}")
-            
+        model=OrderItem
+        fields=["product","quantity"]
 
 
 
 
-        for item in cart.cartitem_set.all():
-            item.product.quantity -=item.quantity
-            item.product.save()
+class OrderSerialzier(serializers.ModelSerializer):
+      items=OrderItemSerializer(many=True)
+
+      class Meta:
+          model=Order
+          fields=["id","user","items","address","created_at"]
+          read_only_fields = ["id", "user", "created_at"]
+
+      def create(self, validated_data):
+          request=self.context.get("request")
+          user=request.user
+          items_data=validated_data.pop("items")
+          order=Order.objects.create(user=user,**validated_data)
 
 
-        # user = self.context['request'].user
+          for item in items_data:
+              product=item["product"]
+              quantity=item["quantity"]
 
-        order=Order.objects.create(user=user,**validated_data)
-        cart.cartitem_set.all().delete()
-        return order
+              if product.quantity<quantity: 
+                  raise serializers.ValidationError({
+                      "error":f" not enough stock for {product.product_name} availbale quantity {product.quantity}  requested {quantity}"
+                  })
+              product.quantity -=quantity
+              product.save()
+              OrderItem.objects.create(order=order, product=product,quantity=quantity)
+          return order
+
 
 
 

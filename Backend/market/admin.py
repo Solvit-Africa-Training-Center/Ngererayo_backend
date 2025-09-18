@@ -8,7 +8,7 @@ from django.utils.html import strip_tags
 from .models import (
     Product,Cart,CartItem,Order,Owner,ProductComments,ProductMessage
     ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow
-    ,Payment,Testimonials,CustomerSupport
+    ,Payment,Testimonials,CustomerSupport,OrderItem
 )
 
 # Register your models here.
@@ -51,10 +51,16 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'cart', 'created_at', 'address']
+    list_display = ['user', 'created_at', 'address']
     # search_fields = ('user__username', 'product__name', 'address')
     list_per_page = 10
 
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity']
+    search_fields = ['order__id', 'product__product_name']
+    list_per_page = 10
 
 
 @admin.register(ProductMessage)
