@@ -33,41 +33,6 @@ class Product(models.Model):
 
 
 
-class Cart(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,null=True,blank=True)
-    session_key=models.CharField(max_length=40,null=True,blank=True)
-    products = models.ManyToManyField(Product, through='CartItem')
-
-
-    @property
-    def total_amount(self):
-        return sum(item.product.price * item.quantity for item in self.cartitem_set.all())
-    class Meta:
-        verbose_name="Cart"
-        verbose_name_plural="Carts"
-
-    def __str__(self):
-        if self.user:
-          return f"Cart of {self.user.username}"
-        return f"Cart of session {self.session_key}"
-
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    class Meta:
-        verbose_name="CartItem"
-        verbose_name_plural="CartItems"
-    def __str__(self):
-        if self.cart.user:
-          return f"{self.quantity} of {self.product.product_name} in {self.cart.user.username}'s cart"    
-        return f"{self.quantity} of {self.product.product_name} in session {self.cart.session_key}"
-        
-
-
-
-
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)

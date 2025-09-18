@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from .models import (
-    Product,Cart,CartItem,Order,Owner,ProductComments,ProductMessage
+    Product,Order,Owner,ProductComments,ProductMessage
     ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow
     ,Payment,Testimonials,CustomerSupport,OrderItem
 )
@@ -34,19 +34,6 @@ class OwnerAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Cart)
-class CartAdmin(admin.ModelAdmin):
-    list_display = ['user']
-    search_fields = ['user__username']
-    list_per_page = 10
-
-
-
-@admin.register(CartItem)
-class CartItemAdmin(admin.ModelAdmin):
-    list_display = ['cart', 'product', 'quantity']
-    search_fields = ['cart__user__username', 'product__name']
-    list_per_page = 10
 
 
 @admin.register(Order)

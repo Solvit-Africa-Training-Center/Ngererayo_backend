@@ -11,11 +11,11 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 
 from .serializers import (ProductSerializer,
-                          OwnerSerialzer,CartSerializer,
+                          OwnerSerialzer,
                           CustomerSupportSerializer,
                           ProductMessageSerializer,
                           TestimonialsSerializer,
-                          CartItemSerilizer)
+                          )
 from .models import *
 
 
@@ -175,125 +175,6 @@ class OwnerDeleteProduct(APIView):
 
 
 
-class CartView(generics.RetrieveAPIView):
-    serializer_class=CartSerializer
-    @swagger_auto_schema(
-    tags=["Cart"],
-    operation_description="Get the cart for the authenticated user"
-)
-    def get_object(self):
-        user=self.request.user  if self.request.user.is_authenticated else None
-        session_key=self.request.session.session_key or self.request.session.create()
-        if user:
-            cart,_=Cart.objects.get_or_create(user=user )
-        else:
-            cart, _=Cart.objects.get_or_create(session_key=session_key)
-        return cart        
-    
-class DeleteItemFromcartView(APIView):
-    
-    def delete(self, request, cart_item_id):
-        try:
-            cart_item = CartItem.objects.get(id=cart_item_id)
-        except CartItem.DoesNotExist:
-            return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
-        user = request.user if request.user.is_authenticated else None
-        
-        if cart_item.cart.user:
-            if cart_item.cart.user != user:
-                raise PermissionDenied("You do not have permission to modify this cart item.")
-        
-
-        cart_item.delete()
-        return Response({"message": "Item removed from cart"}, status=status.HTTP_200_OK)
-
-class AddToCartView(generics.CreateAPIView):
-    serializer_class = CartItemSerilizer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        user = self.request.user if self.request.user.is_authenticated else None
-        session_key = self.request.session.session_key or self.request.session.create()
-
-        cart, _ = Cart.objects.get_or_create(
-            user=user if user else None,
-            session_key=None if user else session_key
-        )
-        context["cart"] = cart
-        return context
-
-    def perform_create(self, serializer):
-        cart = self.get_serializer_context()["cart"]
-        product = serializer.validated_data["product"]
-        quantity = serializer.validated_data["quantity"]
-
-        cart_item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product=product,
-            defaults={"quantity": quantity}
-        )
-
-        if not created:
-            cart_item.quantity += quantity
-            cart_item.save()
-
-        serializer.instance = cart_item
-
-
-
-class UpdateQuantityOnCartView(APIView):
-    def put(self, request, cart_item_id):
-        try:
-            cart_item = CartItem.objects.get(id=cart_item_id)
-        except CartItem.DoesNotExist:
-            return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        user = request.user if request.user.is_authenticated else None
-        # session_key = request.session.session_key or request.session.create()
-
-        if cart_item.cart.user:
-            if cart_item.cart.user != user:
-                raise PermissionDenied("You do not have permission to modify this cart item.")
-        # else:
-        #     if cart_item.cart.session_key != session_key:
-        #         raise PermissionDenied("You do not have permission to modify this cart item.")
-
-
-        new_quantity = request.data.get("quantity")
-        operation = request.data.get("operation")  
-
-        if new_quantity is not None:
-            new_quantity = int(new_quantity)
-            if new_quantity < 0:
-                return Response({"error": "Quantity must be non-negative"}, status=status.HTTP_400_BAD_REQUEST)
-
-            if new_quantity == 0:
-                cart_item.delete()
-                return Response({"message": "Item removed from cart"}, status=status.HTTP_200_OK)
-
-            if new_quantity > cart_item.product.quantity:
-                return Response({"error": f"Only {cart_item.product.quantity} items available in stock"}, status=status.HTTP_400_BAD_REQUEST)
-
-            cart_item.quantity = new_quantity
-
-        elif operation in ["increase", "decrease"]:
-            amount = int(request.data.get("amount", 1))
-            if operation == "increase":
-                if cart_item.quantity + amount > cart_item.product.quantity:
-                    return Response({"error": f"Only {cart_item.product.quantity} items available in stock"}, status=status.HTTP_400_BAD_REQUEST)
-                cart_item.quantity += amount
-            elif operation == "decrease":
-                if cart_item.quantity - amount < 1:
-                    cart_item.delete()
-                    return Response({"message": "Item removed from cart"}, status=status.HTTP_200_OK)
-                cart_item.quantity -= amount
-        else:
-            return Response({"error": "Provide either 'quantity' or 'operation'"}, status=status.HTTP_400_BAD_REQUEST)
-
-        cart_item.save()
-        serializer = CartItemSerilizer(cart_item)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
     # .............Testimonial view .........................

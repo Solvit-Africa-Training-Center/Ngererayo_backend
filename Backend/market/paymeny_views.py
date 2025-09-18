@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
-from .models import Cart,Payment,Order,CartItem
+from .models import Payment,Order
 
 
 
@@ -46,9 +46,9 @@ def stripe_webhook(request):
 
             
             order = payment.order
-            for item in CartItem.objects.filter(cart=order.cart):
-                item.product.quantity -= item.quantity
-                item.product.save()
+            # for item in CartItem.objects.filter(cart=order.cart):
+                # item.product.quantity -= item.quantity
+                # item.product.save()
             order.cart.delete()  
         except Payment.DoesNotExist:
             pass

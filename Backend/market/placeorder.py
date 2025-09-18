@@ -40,3 +40,6 @@ class GetOrdersView(APIView):
         orders=Order.objects.filter(user=request.user)
         serilaizer=OrderSerialzier(orders,many=True)
         return Response(serilaizer.data,status=status.HTTP_200_OK)
+
+
+

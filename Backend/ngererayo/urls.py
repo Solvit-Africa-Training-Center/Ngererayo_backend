@@ -20,7 +20,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view as swagger_get_schema_view
 from  django.conf import settings
 from django.conf.urls.static import static
-
+admin.site.site_header="Ngererayo Admin"
+admin.site.site_title="Ngererayo Admin Portal"
 
 schema_view=swagger_get_schema_view(
     openapi.Info(

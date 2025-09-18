@@ -7,7 +7,7 @@ from .models import (Product,Owner,
                      Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
                      CustomerSupport,OrderItem,
-                     CartItem, Cart)
+                     )
 from accounts.models import CustomUser
 
 
@@ -35,43 +35,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 
-class CartItemSerilizer(serializers.ModelSerializer):
-    
-    product_id=serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),source='product',write_only=True)
-    product=ProductSerializer(read_only=True)
-
-    class Meta:
-        model= CartItem
-        fields=["id","product_id", "quantity", "product"]
-
-    def validate(self, data):
-         product=data['product']
-         quantity=data["quantity"]
-
-         if quantity > product.quantity:
-             raise serializers.ValidationError({"quantity":f" only {product.quantity} available products in stock"})
-         cart=self.context.get("cart")
-         if cart:
-             existing_item=CartItem.objects.filter(cart=cart,product=product).first()
-             if existing_item:
-                 new_total_quantity=existing_item.quantity+quantity
-                 if new_total_quantity > product.quantity:
-                     raise serializers.ValidationError({"quantity":f" you already have {existing_item.quantity} in cart   and only {product.quantity} available products in stock"})
-                 existing_item.quantity=new_total_quantity
-                 existing_item.save()
-
-  
-
-         return data     
-    
-
-
-class CartSerializer(serializers.ModelSerializer):
-    item=CartItemSerilizer(source="cartitem_set",many=True)
-
-    class Meta:
-        model= Cart
-        fields=["id","user","item","session_key"]
 
 
     # ...................... place order serializer ........................................
