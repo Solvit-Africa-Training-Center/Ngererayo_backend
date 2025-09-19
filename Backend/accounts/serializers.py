@@ -50,8 +50,10 @@ class  RegisterUserSerializer(serializers.ModelSerializer):
               email=validated_data["email"],
               phone=validated_data["phone"],
               password=validated_data["password"],
-              role=validated_data.get("role", "buyer")
+           
          )
+         buyer_role,_=Role.objects.get_or_create(name="buyer")
+         user.role.add(buyer_role)
          return user
 
 
