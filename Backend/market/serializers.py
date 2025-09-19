@@ -101,10 +101,11 @@ class RequestTobeOwerSerializer(serializers.ModelSerializer):
 
 
 class ReplaySerializer(serializers.ModelSerializer):
+    sender = serializers.ReadOnlyField(source='sender.username')
     reply_message=serializers.CharField(source='parent.sender.username',read_only=True)
     class Meta:
         model=ProductMessage
-        fields=["id","reply_message","message","created_at"]
+        fields=["id","reply_message","message","created_at","sender"]
 
 
 class ProductMessageSerializer(serializers.ModelSerializer):

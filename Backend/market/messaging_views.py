@@ -19,17 +19,14 @@ class ProductMessageView(generics.ListCreateAPIView):
     permission_classes=[permissions.IsAuthenticated] 
 
     def get_queryset(self):
-        product_id=self.kwargs["product_id"]
-        product=Product.objects.get(id=product_id)
+        product_id = self.kwargs["product_id"]
+        product = Product.objects.get(id=product_id)
+        
         if product.owner.user != self.request.user:
             raise PermissionDenied("You do not have permission to access this product.")
-        return ProductMessage.objects.filter(product=product).order_by("-created_at")
-    @swagger_auto_schema(
-    tags=["Product Messages"],
-    operation_description="user get all message on the product"
-)
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        
+    
+        return ProductMessage.objects.filter(product=product, parent=None).order_by("-created_at")
 
 
 
@@ -96,30 +93,27 @@ class GetMessageYouSent(APIView):
     
     
 
-
 class ReplayMessage(APIView):
-    permission_classes=[permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, message_id):
-        reply_text = request.data.get("message")  
+        reply_text = request.data.get("message")
         if not reply_text:
             return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        
         original_message = ProductMessage.objects.filter(id=message_id).first()
         if not original_message:
             return Response({"error": "Original message not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        
         sender = request.user
-        if not sender.is_authenticated:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    
+        # ✅ Create reply with parent=original_message
         reply_message = ProductMessage.objects.create(
             product=original_message.product,
             sender=sender,
-            receiver=original_message.sender,  
-            message=reply_text
+            receiver=original_message.sender,  # reply goes to original sender
+            message=reply_text,
+            parent=original_message           # ✅ Link reply to parent
         )
 
         return Response({
@@ -130,6 +124,10 @@ class ReplayMessage(APIView):
             "message": reply_message.message,
             "created_at": reply_message.created_at
         }, status=status.HTTP_201_CREATED)
+
+
+
+
 class GetSendMessage(APIView):
     def get(self,request,product_id):
         message=ProductMessage.objects.filter(product_id=product_id)
