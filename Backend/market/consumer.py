@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
+from django.contrib.auth.models import AnonymousUser
 from .models import Product, ProductMessage
 
 
@@ -9,7 +10,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.product_id = self.scope['url_route']['kwargs']['product_id']
         self.chat_group_name = f"chat_{self.product_id}"
 
-        
+
         await self.channel_layer.group_add(
             self.chat_group_name,
             self.channel_name
@@ -17,28 +18,33 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+  
         await self.channel_layer.group_discard(
             self.chat_group_name,
             self.channel_name
         )
 
     async def receive(self, text_data):
-        data = json.loads(text_data) 
-        message = data["message"]
+        data = json.loads(text_data)
+        message = data.get("message")
         sender = self.scope.get("user")
+
 
         if sender is None or sender.is_anonymous:
             await self.send(text_data=json.dumps({"error": "Authentication required"}))
             return
 
+
         product = await self.get_product(self.product_id)
         receiver = await self.get_receiver(product, sender)
 
         if not receiver:
-            return
+            return 
 
+     
         saved_message = await self.save_message(product, sender, receiver, message)
 
+       
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
@@ -52,14 +58,27 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-
     async def chat_message(self, event):
-   
+      
         await self.send(text_data=json.dumps(event))
 
+    
     @database_sync_to_async
     def get_product(self, product_id):
-        return Product.objects.get(id=product_id)
+    
+        return Product.objects.select_related("owner__user").get(id=product_id)
+
+    @database_sync_to_async
+    def get_receiver(self, product, sender):
+        """
+        Returns the product owner if sender is not owner,
+        else None
+        """
+        try:
+            owner_user = product.owner.user 
+            return owner_user if sender != owner_user else None
+        except Exception:
+            return None
 
     @database_sync_to_async
     def save_message(self, product, sender, receiver, message):
