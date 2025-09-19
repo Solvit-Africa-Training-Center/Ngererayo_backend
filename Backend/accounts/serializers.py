@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser,Role
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from market.models import Owner
@@ -7,7 +7,16 @@ from market.serializers import OwnerSerialzer
 
 
 
+class RoleSerializer(serializers.ModelSerializer):
+     class Meta:
+          model=Role
+          fields=["id","name"]
+          extra_kwargs = {
+               "id": {"read_only": True},
+          }
+
 class UserSerializer(serializers.ModelSerializer):
+    role=RoleSerializer(many=True,read_only=True)
     owner=OwnerSerialzer(read_only=True)
     class Meta:
         model = CustomUser
