@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'accounts',
     "corsheaders",
     'drf_yasg',
-
+     'channels',
      'cloudinary',
     'cloudinary_storage',
     'market',
@@ -58,6 +58,17 @@ INSTALLED_APPS = [
 
 ]
 
+
+ASGI_APPLICATION = 'ngererayo.asgi.application'
+
+CHANNEL_LAYERS ={
+    "default":{
+        "BACKEND":"channels_redis.core.RedisChannelLayer",
+        "CONFIG":{
+               "hosts": [("127.0.0.1", 6379)],
+        }
+    }
+}
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
