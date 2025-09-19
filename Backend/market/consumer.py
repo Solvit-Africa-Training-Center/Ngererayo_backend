@@ -25,22 +25,20 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data) 
         message = data["message"]
-        sender = self.scope["user"]
+        sender = self.scope.get("user")
 
-        
         if sender is None or sender.is_anonymous:
             await self.send(text_data=json.dumps({"error": "Authentication required"}))
             return
 
         product = await self.get_product(self.product_id)
-        receiver = product.owner.user if sender != product.owner.user else None
+        receiver = await self.get_receiver(product, sender)
 
         if not receiver:
-            return 
+            return
 
         saved_message = await self.save_message(product, sender, receiver, message)
 
-    
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
@@ -53,6 +51,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 "created_at": str(saved_message.created_at),
             }
         )
+
 
     async def chat_message(self, event):
    
