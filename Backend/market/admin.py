@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.core.mail import send_mail,EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from accounts.models import Role
 
 from .models import (
     Product,Order,Owner,ProductComments,ProductMessage
@@ -124,7 +125,7 @@ class    RequestTobeOwerAdmin(admin.ModelAdmin):
                     farming_name=req.farming_name,
                     location=req.location,
                 )
-                req.user.role="farmer"
+                req.user.role.add(Role.objects.get_or_create(name="farmer")[0])
                 req.user.save()
 
                 self.send_seller_email(req.user,approved=True)
@@ -180,7 +181,7 @@ class RequestTobeConsultantAdmin(admin.ModelAdmin):
 
 
                 )
-                req.user.role="consultant"
+                req.user.role.add(Role.objects.get_or_create(name="consultant")[0])
                 req.user.save()
                 self.send_consultant_email(req.user, approved=True)
                 req.delete()

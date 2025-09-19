@@ -11,8 +11,13 @@ user_role=[
     ("consultant","consultant")
 ]
 
+class Role(models.Model):
+    name=models.CharField(max_length=20,choices=user_role,unique=True,default="buyer")
+    def __str__(self):
+          return self.get_name_display()
+
 class CustomUser(AbstractUser):
-    role=models.CharField(max_length=10,choices=user_role,default="buyer")
+    role=models.ManyToManyField(Role,blank=True,related_name="users")
     phone=models.CharField(max_length=15,blank=True,null=True)
     email=models.EmailField(unique=True)
     otp=models.CharField(max_length=6,blank=True,null=True)
