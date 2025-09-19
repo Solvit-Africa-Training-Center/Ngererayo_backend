@@ -2,6 +2,7 @@ from django.urls import path,include
 from .views import (RegisterUserView,
                     LoginView,
                     ResendOtpView,
+                    GetUser,
                     ForgotPasswordView,
                     ResetPasswordView,
                     CurrentLoginUserView,
@@ -28,5 +29,6 @@ urlpatterns=[
     path('resend-otp/',ResendOtpView.as_view(),name='resend_otp'),
     path("forgot-password/",ForgotPasswordView.as_view(),name="forgot_password"),
     path("reset-password/",ResetPasswordView.as_view(),name="reset_password"),
+    path("user/<int:user_id>/",GetUser.as_view(), name="get_user"),
     
 ]

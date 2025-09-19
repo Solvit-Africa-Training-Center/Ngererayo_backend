@@ -186,3 +186,15 @@ class ResetPasswordView(APIView):
 
                         
                   
+
+
+class GetUser(APIView):
+      def get(self, request, user_id):
+            try:
+                  user=CustomUser.objects.get(id=user_id)
+                  serializer=UserSerializer(user)
+                  return Response(serializer.data, status=status.HTTP_200_OK)
+            except CustomUser.DoesNotExist:
+                  return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                  return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
