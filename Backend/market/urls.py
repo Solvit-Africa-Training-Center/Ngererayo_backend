@@ -5,7 +5,7 @@ from .consultant_view import (ConsultantListView,
                               RequestTobeConsultantView,
                               FollowConsultantview,FollowConsultantPostView)
 from .paymeny_views import CreateCheckoutSession,stripe_webhook
-from .placeorder import PlaceOrderView,GetOrdersView
+from .placeorder import PlaceOrderView,GetOrdersView,OwnerOrdersView
 from .RequestedFarmer import RequestTobeOwnerView
 from .messaging_views import (ProductMessageView,
                               SendProductCommentsView,
@@ -61,6 +61,7 @@ path("owner-product/<int:product_id>/delete/", OwnerDeleteProduct.as_view(), nam
 
 path("place-order/",PlaceOrderView.as_view(), name="place-order"),
 path("get-orders/",GetOrdersView.as_view(), name="get-orders"),
+path("owner/orders/",OwnerOrdersView.as_view(), name="owner-orders"),
 path("product-message/<int:product_id>/",ProductMessageView.as_view(),name="product-messages"),
 # path("product/<int:product_id>/messages/", ProductMessageView.as_view(), name="product-messages"),
 path("product/<int:product_id>/messages/", ProductMessageView.as_view(), name="product-messages"),

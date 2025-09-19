@@ -43,3 +43,14 @@ class GetOrdersView(APIView):
 
 
 
+
+
+class OwnerOrdersView(APIView):
+    permission_classes =[permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if not hasattr(request.user,'owner'):
+            return Response({"error":"You are not an owner"},status=status.HTTP_403_FORBIDDEN)
+        orders=Order.objects.filter(items__product__owner=request.user.owner).distinct()
+        serilaizer=OrderSerialzier(orders,many=True)
+        return Response(serilaizer.data,status=status.HTTP_200_OK)
