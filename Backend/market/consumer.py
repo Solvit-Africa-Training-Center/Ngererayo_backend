@@ -27,6 +27,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         message = data["message"]
         sender = self.scope["user"]
 
+        
+        if sender is None or sender.is_anonymous:
+            await self.send(text_data=json.dumps({"error": "Authentication required"}))
+            return
+
         product = await self.get_product(self.product_id)
         receiver = product.owner.user if sender != product.owner.user else None
 
