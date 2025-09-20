@@ -4,6 +4,9 @@ from rest_framework import routers
 from .consultant_view import (ConsultantListView,
                               RequestTobeConsultantView,
                               ConsultantAddPostView,
+                              ConsultantEditPostView,
+                              ConsultantDeletePostView,
+                              ConsultantPostsView,
                               FollowConsultantview,FollowConsultantPostView)
 from .paymeny_views import CreateCheckoutSession,stripe_webhook
 from .placeorder import PlaceOrderView,GetOrdersView,OwnerOrdersView
@@ -86,6 +89,9 @@ path("consultants/<int:consultant_id>/follow/",FollowConsultantview.as_view(),na
 path("consultants/following/post/",FollowConsultantPostView.as_view(),name="follow-consultant-post"),
 path("requst-consultant/",RequestTobeConsultantView.as_view(), name="request-consultant"),
 path("consultants/add-post/",ConsultantAddPostView.as_view(), name="consultant-add-post"),
+path("consultants/<int:consultant_id>/posts/",ConsultantPostsView.as_view(), name="consultant-posts"),
+path("consultants/posts/<int:post_id>/edit/",ConsultantEditPostView.as_view(), name="consultant-edit-post"),
+path("consultants/posts/<int:post_id>/delete/",ConsultantDeletePostView.as_view(), name="consultant-delete-post"),
 
 
 ]
