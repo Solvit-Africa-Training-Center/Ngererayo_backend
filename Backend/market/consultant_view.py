@@ -101,7 +101,7 @@ class ConsultantEditPostView(APIView):
 
 
 class ConsultantDeletePostView(APIView):
-    def Delete(self, request,post_id):
+    def delete(self, request, post_id):
         try:
             post=ConsultantPost.objects.get(id=post_id)
         except ConsultantPost.DoesNotExist:
