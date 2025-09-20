@@ -101,6 +101,14 @@ TEMPLATES = [
     },
 ]
 
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://ngererayo-backend.onrender.com",
+    "https://ngererayo-web.vercel.app",   
+]
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 "https://ngererayo-backend.onrender.com",
