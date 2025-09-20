@@ -3,7 +3,7 @@ from .models import CustomUser,Role
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from market.models import Owner
-from market.serializers import OwnerSerialzer
+from market.serializers import OwnerSerialzer,ConsultantSerializer
 
 
 
@@ -18,9 +18,10 @@ class RoleSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     role=RoleSerializer(many=True,read_only=True)
     owner=OwnerSerialzer(read_only=True)
+    consultant=ConsultantSerializer(read_only=True)
     class Meta:
         model = CustomUser
-        fields = ["id", "username", "email", "first_name", "last_name", "role", "phone", "owner"]
+        fields = ["id", "username", "email", "first_name", "last_name", "role", "phone", "owner", "consultant"]
 
 class  RegisterUserSerializer(serializers.ModelSerializer):
     first_name=serializers.CharField(required=True)
