@@ -175,6 +175,7 @@ class ConsultantPostSerializer(serializers.ModelSerializer):
      class Meta:
          model=ConsultantPost
          fields=["id","consultant","post_title","post_description","post_image","created_at"]
+         read_only_fields = ["id", "consultant", "created_at"]
 
 
      def validate(self, data):

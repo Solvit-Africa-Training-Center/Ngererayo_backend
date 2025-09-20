@@ -99,8 +99,7 @@ class Consultant(models.Model):
         verbose_name="Consultant"
         verbose_name_plural="Consultants"
     def __str__(self):
-        return self.user.first_name     
-
+        return self.user.first_name   
 
 class ConsultantPost(models.Model):
     consultant=models.ForeignKey(Consultant,on_delete=models.CASCADE)

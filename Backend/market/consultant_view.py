@@ -53,3 +53,20 @@ class RequestTobeConsultantView(APIView):
             serializer.save(user=request.user)
             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors,status=status.HTTP_403_FORBIDDEN)
+
+
+
+
+class ConsultantAddPostView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def post(self, request):
+         try:
+             consultant=request.user.consultant
+         except Consultant.DoesNotExist:
+                return Response({"error":"You are not a consultant"},status=status.HTTP_403_FORBIDDEN)
+         serializer=ConsultantPostSerializer(data=request.data)
+         if serializer.is_valid():
+             serializer.save(consultant=consultant)
+             return Response(serializer.data,status=status.HTTP_201_CREATED)
+         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
