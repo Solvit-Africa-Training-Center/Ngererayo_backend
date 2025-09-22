@@ -35,7 +35,7 @@ class ProductView(APIView):
     def get(self, request):
         try:
             product=Product.objects.all().order_by(' created_at')[:6]
-            serializer=ProductSerializer(product,many=True)
+            serializer=ProductSerializer(product,many=True,context={"request":request})
             return Response(serializer.data)
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -44,7 +44,7 @@ class ProductListView(APIView):
     def get(self, request):
         try:
             product=Product.objects.all()
-            serializer=ProductSerializer(product,many=True)
+            serializer=ProductSerializer(product,many=True,context={"request":request})
             return Response(serializer.data)
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)

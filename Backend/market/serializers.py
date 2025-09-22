@@ -35,14 +35,19 @@ class ProductSerializer(serializers.ModelSerializer):
            "owner": {"read_only": True},
        }
     def get_discount_amount(self,obj):
-        request=self.context.get("request")
-        user=request.user
-        if request and   request.user.is_authenticated:
-            discount=obj.discounts.filter(customer=user).first()
-            if discount:
-                return discount.get_discount_amount()
-        return obj.price 
+        request=self.context.get("request", None)
+        if not request and   request.user.is_authenticated:
+             return obj.price
+        discounts=getattr(obj,"discounts",None)
+        if discounts:
+            discount=discounts[0]
+            return discounts.get_discount_amount()
+        discount=obj.discounts.filter(customer=request.user).first()
 
+        if discount:
+            return discount.get_discount_amount()
+        return obj.price
+            
  
 
 
