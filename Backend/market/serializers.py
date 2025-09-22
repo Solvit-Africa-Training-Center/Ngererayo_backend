@@ -25,7 +25,7 @@ class OwnerSerialzer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    discount_amaount=serializers.SerializerMethodField()
+    discount_amount=serializers.SerializerMethodField()
 
     class Meta:
         model=Product
