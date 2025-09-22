@@ -41,7 +41,8 @@ from .views import (ProductView,
                     OwnerEditProductView, )
 
 
-from .comments_views import (SendCommentView,CommentsRepliesView,GetCommentsView)
+from .comments_views import (SendCommentView,CommentsRepliesView,GetCommentsView,GetOneCommentView
+                             )
 
 
 router=routers.DefaultRouter()
@@ -96,7 +97,8 @@ path("consultants/posts/<int:post_id>/edit/",ConsultantEditPostView.as_view(), n
 path("consultants/posts/<int:post_id>/delete/",ConsultantDeletePostView.as_view(), name="consultant-delete-post"),
 path("comments/<int:product_id>/",SendCommentView.as_view(), name="comments"),
 path("comments/<int:comment_id>/reply/",CommentsRepliesView.as_view(), name="replies"),
-path("comments/<int:product_id>/",GetCommentsView.as_view(), name="get-comments")
+path("comments/<int:product_id>/",GetCommentsView.as_view(), name="get-comments"),
+path("comments/one/<int:comment_id>/",GetOneCommentView.as_view(), name="get-one-comment"),
 
 
 ]

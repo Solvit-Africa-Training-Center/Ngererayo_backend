@@ -56,4 +56,12 @@ class GetCommentsView(APIView):
         product=get_object_or_404(Product, product_id=product_id)
         serializer=ProductCommentsSerializer(product.comments.all(),many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+class GetOneCommentView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def get(self, request, comment_id):
+        comment=get_object_or_404(ProductComments, id=comment_id)
+        serializer=ProductCommentsSerializer(comment)
+        return Response(serializer.data,status=status.HTTP_200_OK)
     
