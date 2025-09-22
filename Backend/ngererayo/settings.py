@@ -69,7 +69,7 @@ CHANNEL_LAYERS ={
         }
     }
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MIDDLEWARE = [
 
@@ -212,8 +212,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [ BASE_DIR / "Backend/static",]
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -222,7 +222,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='accounts.CustomUser'   
 
 
-CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+# CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
 
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"   
