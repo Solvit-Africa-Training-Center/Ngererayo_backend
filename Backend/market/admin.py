@@ -192,7 +192,7 @@ class RequestTobeConsultantAdmin(admin.ModelAdmin):
         for req in queryset:
             self.send_consultant_email(req.user, approved=False)
             req.delete()
-            self.message_user("request rejected")
+            self.message_user(request,"request rejected")
     reject_request.short_description="reject request"                    
 
 
