@@ -117,14 +117,20 @@ class ProductMessageSerializer(serializers.ModelSerializer):
          fields=["id","sender","receiver","message","created_at","is_read","parent","replies"]
 
 
-
+class  ProductCommentsRepliesSerializer(serializers.ModelSerializer):
+    user=serializers.ReadOnlyField(source='user.username')
+    reply_text=serializers.CharField(source='parent.user.username',read_only=True)
+    class Meta:
+        model=ProductComments
+        fields=["id","user","comment","created_at","reply_text"]
 
 class ProductCommentsSerializer(serializers.ModelSerializer):
     user=serializers.ReadOnlyField(source='user.username')
     product=serializers.ReadOnlyField(source='product.product_name')
+    replies=ProductCommentsRepliesSerializer(many=True,read_only=True)
     class Meta:
         model=ProductComments
-        fields=["id","user","product","comment","created_at","updated_at"]
+        fields=["id","user","product","comment","created_at","updated_at","parent","replies"]
 
 
 

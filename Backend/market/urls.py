@@ -41,6 +41,8 @@ from .views import (ProductView,
                     OwnerEditProductView, )
 
 
+from .comments_views import (SendCommentView,CommentsRepliesView,GetCommentsView)
+
 
 router=routers.DefaultRouter()
 router.register("products",ProductView,basename="products")
@@ -92,6 +94,9 @@ path("consultants/add-post/",ConsultantAddPostView.as_view(), name="consultant-a
 path("consultants/<int:consultant_id>/posts/",ConsultantPostsView.as_view(), name="consultant-posts"),
 path("consultants/posts/<int:post_id>/edit/",ConsultantEditPostView.as_view(), name="consultant-edit-post"),
 path("consultants/posts/<int:post_id>/delete/",ConsultantDeletePostView.as_view(), name="consultant-delete-post"),
+path("comments/<int:product_id>/",SendCommentView.as_view(), name="comments"),
+path("comments/<int:comment_id>/reply/",CommentsRepliesView.as_view(), name="replies"),
+path("comments/<int:product_id>/",GetCommentsView.as_view(), name="get-comments")
 
 
 ]
