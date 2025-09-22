@@ -31,7 +31,18 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
 
-
+class ProductDiscount(models.Model):
+    owner=models.ForeignKey(Owner, on_delete=models.CASCADE)
+    product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="discounts")
+    customer=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    discount_percentage=models.DecimalField(max_digits=5, decimal_places=2)
+    created_at=models.DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together=('customer','product')
+        verbose_name="ProductDiscount"
+        verbose_name_plural="ProductDiscounts"
+    def __str__(self):
+        return f"{self.discount_percentage}% discount on {self.product.product_name} for {self.customer.username}"    
 
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -7,6 +7,7 @@ from .consultant_view import (ConsultantListView,
                               ConsultantEditPostView,
                               ConsultantDeletePostView,
                               ConsultantPostsView,
+                              PostView,
                               FollowConsultantview,FollowConsultantPostView)
 from .paymeny_views import CreateCheckoutSession,stripe_webhook
 from .placeorder import PlaceOrderView,GetOrdersView,OwnerOrdersView
@@ -41,7 +42,13 @@ from .views import (ProductView,
                     OwnerEditProductView, )
 
 
-from .comments_views import (SendCommentView,CommentsRepliesView,GetCommentsView,GetOneCommentView
+from .comments_views import (SendCommentView,
+                             CommentsRepliesView,
+                             GetCommentsView,
+                             GetOneCommentView,
+                             DeleteYourCommentView,
+                             EditYourCommentView,
+                             ProductOwnerDeleteCommentView
                              )
 
 
@@ -88,6 +95,7 @@ path("stripe-webhook/",stripe_webhook,name="stripe-webhook"),
 path("testimonials/",TestimonialView.as_view(),name="testimonials"),
 path("customer-support/",CustomerSupportView.as_view(),name="customer-support"),
 path("consultants/",ConsultantListView.as_view(),name="consultants"),
+path("consultants/posts/",PostView.as_view(),name="all-posts"),
 path("consultants/<int:consultant_id>/follow/",FollowConsultantview.as_view(),name="follow-consultant"),
 path("consultants/following/post/",FollowConsultantPostView.as_view(),name="follow-consultant-post"),
 path("requst-consultant/",RequestTobeConsultantView.as_view(), name="request-consultant"),
@@ -99,6 +107,9 @@ path("comments/<int:product_id>/",SendCommentView.as_view(), name="comments"),
 path("comments/<int:comment_id>/reply/",CommentsRepliesView.as_view(), name="replies"),
 path("comments/<int:product_id>/",GetCommentsView.as_view(), name="get-comments"),
 path("comments/one/<int:comment_id>/",GetOneCommentView.as_view(), name="get-one-comment"),
+path("comments/<int:comment_id>/delete/", DeleteYourCommentView.as_view(), name="delete-your-comment"),
+path("comments/<int:comment_id>/edit/", EditYourCommentView.as_view(), name="edit-your-comment"),
+path("comments/<int:comment_id>/owner-delete/", ProductOwnerDeleteCommentView.as_view(), name="product-owner-delete-comment"),
 
 
 ]

@@ -83,6 +83,16 @@ class ConsultantPostsView(APIView):
 
 
 
+class PostView(APIView):
+    def get(self, request):
+        posts=ConsultantPost.objects.all().order_by('-created_at')
+        serializer=ConsultantPostSerializer(posts,many=True)
+        return Response(serializer.data)
+
+
+
+
+
 class ConsultantEditPostView(APIView):
     permission_classes=[permissions.IsAuthenticated]
     def put(self, request,post_id):

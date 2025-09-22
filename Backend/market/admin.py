@@ -8,7 +8,8 @@ from accounts.models import Role
 
 from .models import (
     Product,Order,Owner,ProductComments,ProductMessage
-    ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow
+    ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow,
+    ProductDiscount
     ,Payment,Testimonials,CustomerSupport,OrderItem,RequestTobeConsultant
 )
 
@@ -24,7 +25,11 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-
+@admin.register(ProductDiscount)
+class ProductDiscountAdmin(admin.ModelAdmin):
+    list_display = ['product', 'customer', 'discount_percentage', 'owner', 'created_at']
+    search_fields = ['product__product_name', 'customer__username', 'owner__user__username']
+    list_per_page = 10
 
 @admin.register(Owner)
 class OwnerAdmin(admin.ModelAdmin):

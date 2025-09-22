@@ -64,4 +64,36 @@ class GetOneCommentView(APIView):
         comment=get_object_or_404(ProductComments, id=comment_id)
         serializer=ProductCommentsSerializer(comment)
         return Response(serializer.data,status=status.HTTP_200_OK)
-    
+
+class ProductOwnerDeleteCommentView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def delete(self, request, comment_id):
+        comment=get_object_or_404(ProductComments, id=comment_id)
+        if request.user != comment.product.owner.user:
+            return Response("you do not have permission to delete this comment",status=status.HTTP_403_FORBIDDEN)
+        comment.delete()
+        return Response("comment deleted successfully",status=status.HTTP_200_OK)
+
+class EditYourCommentView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def put(self, request, comment_id):
+        comment=get_object_or_404(ProductComments, id=comment_id)
+        if request.user!=comment.user:
+            return Response("you do not have permission to edit this comment",status=status.HTTP_403_FORBIDDEN)
+        new_comment=request.data.get("comment")
+        if not new_comment:
+            return Response("comment not found",status=status.HTTP_400_BAD_REQUEST  )
+        comment.comment=new_comment
+        comment.save()
+        return Response("comment edited successfully",status=status.HTTP_200_OK)
+
+
+
+class DeleteYourCommentView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def delete(self, request, comment_id):
+        comment=get_object_or_404(ProductComments, id=comment_id)
+        if request.user != comment.user:
+            return Response("you do not have permission to delete this comment",status=status.HTTP_403_FORBIDDEN)
+        comment.delete()
+        return Response("comment deleted successfully",status=status.HTTP_200_OK)

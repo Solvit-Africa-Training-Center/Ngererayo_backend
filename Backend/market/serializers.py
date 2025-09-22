@@ -25,15 +25,25 @@ class OwnerSerialzer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    discount_amaount=serializers.SerializerMethodField()
 
     class Meta:
         model=Product
-        fields=["id","product_name","description","price","quantity","product_image","owner"]
+        fields=["id","product_name","description","price","quantity","product_image","owner","discount_amaount"]
         extra_kwargs = {
            "id": {"read_only": True},
            "owner": {"read_only": True},
        }
+    def get_discount_amount(self,obj):
+        request=self.context.get("request")
+        user=request.user
+        if request and   request.user.is_authenticated:
+            discount=obj.discounts.filter(customer=user).first()
+            if discount:
+                return discount.get_discount_amount()
+        return obj.price 
 
+ 
 
 
 
