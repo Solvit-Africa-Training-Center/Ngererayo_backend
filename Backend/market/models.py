@@ -41,6 +41,8 @@ class ProductDiscount(models.Model):
         unique_together=('customer','product')
         verbose_name="ProductDiscount"
         verbose_name_plural="ProductDiscounts"
+    def get_discounted_price(self):
+        return max(self.product.price - self.amount, 0)    
     def __str__(self):
         return f"{self.discount_percentage}% discount on {self.product.product_name} for {self.customer.username}"    
 

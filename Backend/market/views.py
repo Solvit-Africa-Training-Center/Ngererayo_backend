@@ -34,7 +34,7 @@ class ProductView(APIView):
     permission_classes=[AllowAny]
     def get(self, request):
         try:
-            product=Product.objects.all().order_by(' created_at')[:6]
+            product=Product.objects.all().prefetch_related('discounts').order_by(' created_at')[:6]
             serializer=ProductSerializer(product,many=True,context={"request":request})
             return Response(serializer.data)
         except Product.DoesNotExist:
@@ -43,7 +43,7 @@ class ProductView(APIView):
 class ProductListView(APIView):
     def get(self, request):
         try:
-            product=Product.objects.all()
+            product=Product.objects.all().prefetch_related('discounts').order_by('-created_at')
             serializer=ProductSerializer(product,many=True,context={"request":request})
             return Response(serializer.data)
         except Product.DoesNotExist:

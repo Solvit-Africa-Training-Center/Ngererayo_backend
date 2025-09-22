@@ -23,31 +23,46 @@ class OwnerSerialzer(serializers.ModelSerializer):
 
 
 
-
 class ProductSerializer(serializers.ModelSerializer):
-    discount_amount=serializers.SerializerMethodField()
+    discount_amount = serializers.SerializerMethodField()
 
     class Meta:
-        model=Product
-        fields=["id","product_name","description","price","quantity","product_image","owner","discount_amount"]
+        model = Product
+        fields = [
+            "id",
+            "product_name",
+            "description",
+            "price",
+            "quantity",
+            "product_image",
+            "owner",
+            "discount_amount",
+        ]
         extra_kwargs = {
-           "id": {"read_only": True},
-           "owner": {"read_only": True},
-       }
-    def get_discount_amount(self,obj):
-        request=self.context.get("request", None)
-        if not request and   request.user.is_authenticated:
-             return obj.price
-        discounts=getattr(obj,"discounts",None)
-        if discounts:
-            discount=discounts[0]
-            return discounts.get_discount_amount()
-        discount=obj.discounts.filter(customer=request.user).first()
+            "id": {"read_only": True},
+            "owner": {"read_only": True},
+        }
+
+    def get_discount_amount(self, obj):
+        request = self.context.get("request", None)
+
+   
+        if not request or not request.user.is_authenticated:
+            return obj.price
+
+        discounts = getattr(obj, "discounts", None)
+        if discounts is not None and hasattr(discounts, "all"):
+            discount = discounts.filter(customer=request.user).first()
+        else:
+            
+            discount = obj.discounts.filter(customer=request.user).first()
 
         if discount:
-            return discount.get_discount_amount()
+       
+            return discount.get_discounted_price() if hasattr(discount, "get_discounted_price") else discount.amount  
+
         return obj.price
-            
+
  
 
 
