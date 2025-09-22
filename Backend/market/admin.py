@@ -9,7 +9,7 @@ from accounts.models import Role
 from .models import (
     Product,Order,Owner,ProductComments,ProductMessage
     ,Consultant,ConsultantPost,RequestTobeOwer,ConsultantFollow,
-    ProductDiscount
+    ProductDiscount,ProductImages
     ,Payment,Testimonials,CustomerSupport,OrderItem,RequestTobeConsultant
 )
 
@@ -24,7 +24,11 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['product_name', 'description']
     list_per_page = 10
 
-
+@admin.register(ProductImages)
+class ProductImagesAdmin(admin.ModelAdmin):
+    list_display = ['product', 'image']
+    search_fields = ['product__product_name']
+    list_per_page = 10
 @admin.register(ProductDiscount)
 class ProductDiscountAdmin(admin.ModelAdmin):
     list_display = ['product', 'customer', 'discount_percentage', 'owner', 'created_at']

@@ -14,6 +14,7 @@ from .serializers import (ProductSerializer,
                           OwnerSerialzer,
                           CustomerSupportSerializer,
                           ProductMessageSerializer,
+                          ProductImagesSerializer,
                           TestimonialsSerializer,
                           )
 from .models import *
@@ -49,7 +50,18 @@ class ProductListView(APIView):
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-
+class AddProductImagesView(APIView):
+    def post(self, request, product_id):
+        try:
+            owner=Owner.objects.get(user=request.user)
+        except Owner.DoesNotExist:
+            return Response({"error":"Only owners can add product images"},status=status.HTTP_403_FORBIDDEN)
+        product=get_object_or_404(Product, id=product_id, owner=owner)
+        serializer=ProductImagesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(product=product)
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return  Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class ProductDetailView(APIView):
     def get(self, request,product_id):

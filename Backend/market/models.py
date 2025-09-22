@@ -30,6 +30,14 @@ class Product(models.Model):
         verbose_name_plural="Products" 
     def __str__(self):
         return self.product_name
+class ProductImages(models.Model):
+    product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="images")
+    image=models.ImageField(upload_to='product_images')
+    class Meta:
+        verbose_name="ProductImage"
+        verbose_name_plural="ProductImages"
+    def __str__(self):
+        return f"Image for {self.product.product_name}"
 
 class ProductDiscount(models.Model):
     owner=models.ForeignKey(Owner, on_delete=models.CASCADE)

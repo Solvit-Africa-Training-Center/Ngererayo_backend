@@ -4,6 +4,7 @@ from .models import (Product,Owner,
                      ProductMessage,
                      ProductComments,
                      Testimonials,
+                     ProductImages,
                      RequestTobeConsultant,
                      Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
@@ -64,6 +65,16 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.price
 
  
+
+
+class ProductImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ProductImages
+        fields=["id","product","image"]
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "product": {"read_only": True}
+        }
 
 
 
