@@ -69,7 +69,8 @@ CHANNEL_LAYERS ={
         }
     }
 }
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
 
 MIDDLEWARE = [
 
