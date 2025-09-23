@@ -24,6 +24,7 @@ from .messaging_views import (ProductMessageView,
                     GetReplyMessage,
                     GetProductCommentsReplyView,
                     ReplyProductComments,
+                    GetAllUserWhoSendMessage,
                     ReplayMessage)
 
 
@@ -84,6 +85,7 @@ path("product-message/<int:product_id>/",ProductMessageView.as_view(),name="prod
 # path("product/<int:product_id>/messages/", ProductMessageView.as_view(), name="product-messages"),
 path("product/<int:product_id>/messages/", ProductMessageView.as_view(), name="product-messages"),
 path("messages/<int:product_id>/send/", SendProductMessageView.as_view(), name="send-message"),
+path("messages/<int:product_id>/all-users/",  GetAllUserWhoSendMessage.as_view(), name="all-users"),
 path("messages/<int:product_id>/you-sent/", GetMessageYouSent.as_view(), name="you-sent-message"),
 path("messages/<int:message_id>/edit/", EditProductMessageView.as_view(), name="edit-message"),
 path("messages/<int:message_id>/delete/", DeleteProductMessageView.as_view(), name="delete-message"),

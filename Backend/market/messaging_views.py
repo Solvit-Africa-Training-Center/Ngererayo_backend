@@ -7,7 +7,8 @@ from rest_framework import permissions
 from django.core.exceptions import PermissionDenied
 from .models import ProductMessage, Product,ProductComments
 from django.shortcuts import get_object_or_404
-
+from accounts.models import CustomUser
+from accounts.serializers  import UserSerializer
 from .serializers import  ProductMessageSerializer,ProductCommentsSerializer
 
 
@@ -62,6 +63,17 @@ class SendProductMessageView(APIView):
             "created_at": message.created_at
         }, status=status.HTTP_201_CREATED)
 
+
+class GetAllUserWhoSendMessage(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def get(self,request,product_id):
+        senders=ProductMessage.objects.filter(product_id=product_id).values_list('sender',flat=True).distinct()
+        users=CustomUser.objects.filter(id__in=senders)
+        serializer=UserSerializer(users,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    
+    
 class DeleteProductMessageView(APIView):
     def delete(self, request, message_id):
         message = get_object_or_404(ProductMessage, id=message_id)
