@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from accounts.models import CustomUser
 
 # Create your models here.
@@ -40,19 +41,35 @@ class ProductImages(models.Model):
         return f"Image for {self.product.product_name}"
 
 class ProductDiscount(models.Model):
+    DISCOUNT_TYPE_PERCENT='percent'
+    DISCOUNT_TYPE_FIXED='fixed'
+    DISCOUNT_TYPE_CHOICES=[
+        (DISCOUNT_TYPE_PERCENT,'Percentage'),
+        (DISCOUNT_TYPE_FIXED,'Fixed amount')
+    ]
     owner=models.ForeignKey(Owner, on_delete=models.CASCADE)
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="discounts")
     customer=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    discount_percentage=models.DecimalField(max_digits=5, decimal_places=2)
+    discount_type=models.CharField(max_length=10,choices=DISCOUNT_TYPE_CHOICES,default=DISCOUNT_TYPE_PERCENT)
+    amount=models.DecimalField(max_digits=10, decimal_places=2, help_text="Percentage or fixed amount")
     created_at=models.DateTimeField(auto_now_add=True)
     class Meta:
         unique_together=('customer','product')
         verbose_name="ProductDiscount"
         verbose_name_plural="ProductDiscounts"
     def get_discounted_price(self):
-        return max(self.product.price - self.amount, 0)    
+        price=self.product.price
+        if self.discount_type ==self.DISCOUNT_TYPE_PERCENT:
+            factor=(Decimal("100")-self.amount)/ Decimal("100")
+            return (price*factor).quantize(Decimal("0.01"))
+        else:
+            discounted=price-self.amount
+            return discounted if discounted >Decimal("0.00")  else Decimal("0.00") 
     def __str__(self):
-        return f"{self.discount_percentage}% discount on {self.product.product_name} for {self.customer.username}"    
+        if self.discount_type == self.DISCOUNT_TYPE_PERCENT:
+            return f"{self.amount}% discount on {self.product.product_name} for {self.customer.username}"
+        else:
+            return f"{self.amount} off {self.product.product_name} for {self.customer.username}"
 
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

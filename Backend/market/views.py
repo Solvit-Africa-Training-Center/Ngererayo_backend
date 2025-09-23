@@ -12,6 +12,7 @@ from django.core.exceptions import PermissionDenied
 
 from .serializers import (ProductSerializer,
                           OwnerSerialzer,
+                          ProductDiscountSerializer,
                           CustomerSupportSerializer,
                           ProductMessageSerializer,
                           ProductImagesSerializer,
@@ -183,6 +184,41 @@ class OwnerDeleteProduct(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+class AssignDiscountToCustomerView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    def post(self, request, product_id):
+        try:
+            product=Product.objects.get(id=product_id, owner__user=request.user)
+    
+        except Product.DoesNotExist:
+            return Response("Product not found or not owned by you",status=status.HTTP_404_NOT_FOUND)
+        customer_id=request.data.get('customer_id')
+        amount=request.data.get('amount')
+        discount_type=request.data.get('discount_type')
+        if not customer_id or not amount or not discount_type:
+            return Response({"error":"customer_id, amount, and discount_type are required"},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            customer=CustomUser.objects.get(id=customer_id)
+        except CustomUser.DoesNotExist:
+            return Response("Customer not found",status=status.HTTP_404_NOT_FOUND)
+        discount, created=ProductDiscount.objects.update_or_create(
+            product=product,
+            customer=customer,
+            defaults={
+        'amount': Decimal(amount),
+        'discount_type': discount_type,
+        'owner': product.owner  
+    }
+        )
+        serializer=ProductDiscountSerializer(discount)
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+
 
 
 

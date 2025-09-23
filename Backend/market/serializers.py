@@ -6,6 +6,7 @@ from .models import (Product,Owner,
                      Testimonials,
                      ProductImages,
                      ConsultantFollow,
+                     ProductDiscount,
                      RequestTobeConsultant,
                      Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
@@ -67,7 +68,18 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return obj.price
 
- 
+
+
+class ProductDiscountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ProductDiscount
+        fields=["id","owner","product","customer","discount_type","amount","created_at"]
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "owner": {"read_only": True},
+            "product": {"read_only": True},
+            "customer": {"read_only": True},
+            }
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
@@ -250,7 +262,7 @@ class ConsultantSerializer(serializers.ModelSerializer):
         return obj.followers.count()
         
 
-# market/serializers.py
+
 
 class ConsultantFollowSerializer(serializers.ModelSerializer):
     follower = serializers.SerializerMethodField()

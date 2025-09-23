@@ -31,7 +31,7 @@ class ProductImagesAdmin(admin.ModelAdmin):
     list_per_page = 10
 @admin.register(ProductDiscount)
 class ProductDiscountAdmin(admin.ModelAdmin):
-    list_display = ['product', 'customer', 'discount_percentage', 'owner', 'created_at']
+    list_display = ['product', 'customer','discount_type', "amount", 'owner', 'created_at']
     search_fields = ['product__product_name', 'customer__username', 'owner__user__username']
     list_per_page = 10
 
