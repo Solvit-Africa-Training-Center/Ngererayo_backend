@@ -5,12 +5,15 @@ from .models import (Product,Owner,
                      ProductComments,
                      Testimonials,
                      ProductImages,
+                     ConsultantFollow,
                      RequestTobeConsultant,
                      Consultant,ConsultantPost,
                      Order,RequestTobeOwer,
                      CustomerSupport,OrderItem,
                      )
 from accounts.models import CustomUser
+# from accounts.serializers import FollowerSerializer
+
 
 
 
@@ -246,6 +249,24 @@ class ConsultantSerializer(serializers.ModelSerializer):
     def get_followers_count(self,obj):
         return obj.followers.count()
         
+
+# market/serializers.py
+
+class ConsultantFollowSerializer(serializers.ModelSerializer):
+    follower = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ConsultantFollow
+        fields = ["id", "follower", "created_at"]
+
+    def get_follower(self, obj):
+        from accounts.serializers import FollowerSerializer
+        return FollowerSerializer(obj.user).data  
+
+
+
+
+
 
 
 

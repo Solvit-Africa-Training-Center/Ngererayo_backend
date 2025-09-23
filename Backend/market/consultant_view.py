@@ -1,8 +1,10 @@
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 from .serializers import (ConsultantSerializer,
+                          ConsultantFollowSerializer,
                           RequestTobeConsultantSerializer,
                           ConsultantPostSerializer)
 from .models import (Consultant,ConsultantPost,
@@ -120,4 +122,13 @@ class ConsultantDeletePostView(APIView):
             return Response({"error":"You do not have permission to delete this post"},status=status.HTTP_403_FORBIDDEN)
         post.delete()
         return Response({"message":"Post deleted successfully"},status=status.HTTP_200_OK)
-     
+
+
+
+
+class ConsultantAllFollwers(APIView):
+    def get(self, request, consultant_id):
+        consultant=get_object_or_404(Consultant,id=consultant_id)
+        followers=ConsultantFollow.objects.filter(consultant=consultant)
+        serializer=ConsultantFollowSerializer(followers,many=True)
+        return Response(serializer.data)

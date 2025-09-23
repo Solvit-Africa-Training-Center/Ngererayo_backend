@@ -8,6 +8,7 @@ from .consultant_view import (ConsultantListView,
                               ConsultantDeletePostView,
                               ConsultantPostsView,
                               PostView,
+                              ConsultantAllFollwers,
                               FollowConsultantview,FollowConsultantPostView)
 from .paymeny_views import CreateCheckoutSession,stripe_webhook
 from .placeorder import PlaceOrderView,GetOrdersView,OwnerOrdersView
@@ -97,6 +98,7 @@ path("stripe-webhook/",stripe_webhook,name="stripe-webhook"),
 path("testimonials/",TestimonialView.as_view(),name="testimonials"),
 path("customer-support/",CustomerSupportView.as_view(),name="customer-support"),
 path("consultants/",ConsultantListView.as_view(),name="consultants"),
+path("consultants/<int:consultant_id>/followers/",ConsultantAllFollwers.as_view(),name="all-follwers"),
 path("consultants/posts/",PostView.as_view(),name="all-posts"),
 path("consultants/<int:consultant_id>/follow/",FollowConsultantview.as_view(),name="follow-consultant"),
 path("consultants/following/post/",FollowConsultantPostView.as_view(),name="follow-consultant-post"),
