@@ -42,7 +42,7 @@ class ProductImages(models.Model):
 
 class ProductDiscount(models.Model):
     DISCOUNT_TYPE_PERCENT='percent'
-    DISCOUNT_TYPE_FIXED='fixed'
+    DISCOUNT_TYPE_FIXED='Fixed amount'
     DISCOUNT_TYPE_CHOICES=[
         (DISCOUNT_TYPE_PERCENT,'Percentage'),
         (DISCOUNT_TYPE_FIXED,'Fixed amount')
@@ -50,7 +50,7 @@ class ProductDiscount(models.Model):
     owner=models.ForeignKey(Owner, on_delete=models.CASCADE)
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="discounts")
     customer=models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    discount_type=models.CharField(max_length=10,choices=DISCOUNT_TYPE_CHOICES,default=DISCOUNT_TYPE_PERCENT)
+    discount_type=models.CharField(max_length=20,choices=DISCOUNT_TYPE_CHOICES,default=DISCOUNT_TYPE_PERCENT)
     amount=models.DecimalField(max_digits=10, decimal_places=2, help_text="Percentage or fixed amount")
     created_at=models.DateTimeField(auto_now_add=True)
     class Meta:
