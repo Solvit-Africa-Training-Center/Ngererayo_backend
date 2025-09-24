@@ -27,9 +27,8 @@ class OwnerSerialzer(serializers.ModelSerializer):
         }  
 
 
-
 class ProductSerializer(serializers.ModelSerializer):
-    discount_amount = serializers.SerializerMethodField()
+    discounted_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -41,32 +40,28 @@ class ProductSerializer(serializers.ModelSerializer):
             "quantity",
             "product_image",
             "owner",
-            "discount_amount",
+            "discounted_price",
         ]
         extra_kwargs = {
             "id": {"read_only": True},
             "owner": {"read_only": True},
         }
 
-    def get_discount_amount(self, obj):
-        request = self.context.get("request", None)
+    def get_discounted_price(self, obj):
+        request = self.context.get("request")
 
-   
         if not request or not request.user.is_authenticated:
-            return obj.price
+            return obj.price  
 
-        discounts = getattr(obj, "discounts", None)
-        if discounts is not None and hasattr(discounts, "all"):
-            discount = discounts.filter(customer=request.user).first()
-        else:
-            
-            discount = obj.discounts.filter(customer=request.user).first()
+        
+        discount = obj.discounts.filter(customer=request.user).first()
 
         if discount:
-       
-            return discount.get_discounted_price() if hasattr(discount, "get_discounted_price") else discount.amount  
+           
+            return discount.get_discounted_price()
 
         return obj.price
+
 
 
 
