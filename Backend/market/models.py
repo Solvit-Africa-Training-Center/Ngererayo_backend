@@ -42,10 +42,10 @@ class ProductImages(models.Model):
 
 class ProductDiscount(models.Model):
     DISCOUNT_TYPE_PERCENT='percent'
-    DISCOUNT_TYPE_FIXED='Fixed amount'
+    DISCOUNT_TYPE_FIXED='Fixed'
     DISCOUNT_TYPE_CHOICES=[
         (DISCOUNT_TYPE_PERCENT,'Percentage'),
-        (DISCOUNT_TYPE_FIXED,'Fixed amount')
+        (DISCOUNT_TYPE_FIXED,'Fixed-amount')
     ]
     owner=models.ForeignKey(Owner, on_delete=models.CASCADE)
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="discounts")
