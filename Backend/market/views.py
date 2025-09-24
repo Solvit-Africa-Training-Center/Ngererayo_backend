@@ -220,8 +220,50 @@ class AssignDiscountToCustomerView(APIView):
 
 
 
+class ProductOwnerGetDiscountsView(APIView):
+    def get(self, request, product_id):
+        try:
+            owner=Owner.objects.get(user=request.user)
+            product=Product.objects.get(id=product_id,owner=owner)
+            discounts=ProductDiscount.objects.filter(product=product)
+            serializer=ProductDiscountSerializer(discounts,many=True)
+            return Response(serializer.data)
+        except (Owner.DoesNotExist, Product.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+
+class OwnerEditProductDiscounts(APIView):
+    def put(self, request, product_id, customer_id):
+        try:
+            owner=Owner.objects.get(user=request.user)
+            product=Product.objects.get(id=product_id,owner=owner)
+            customer=CustomUser.objects.get(id=customer_id)
+            discount=ProductDiscount.objects.get(product=product,customer=customer)
+        except (Owner.DoesNotExist, Product.DoesNotExist, CustomUser.DoesNotExist, ProductDiscount.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer=ProductDiscountSerializer(discount,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class ProductDiscountDelateView(APIView):
+    def delete(self, request, product_id, customer_id):
+        try:
+            owner=Owner.objects.get(user=request.user)
+            product=Product.objects.get(id=product_id,owner=owner)
+            customer=CustomUser.objects.get(id=customer_id)
+            discount=ProductDiscount.objects.get(product=product,customer=customer)
+        except (Owner.DoesNotExist, Product.DoesNotExist, CustomUser.DoesNotExist, ProductDiscount.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        discount.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+        
 
 
 
