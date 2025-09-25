@@ -61,6 +61,13 @@ class ProductSerializer(serializers.ModelSerializer):
             return discount.get_discounted_price()
 
         return obj.price
+    def get_prooduct_image(self,obj):
+        request=self.context.get("request")
+        if not  request:
+            return None
+        return request.build_absolute_uri(obj.product_image.url)
+    
+
 
 
 
