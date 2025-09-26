@@ -59,8 +59,8 @@ CHANNEL_LAYERS = {
 
 # Cloudinary Configuration - UPDATED
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_NAME", "dkfph860j"),
-    'API_KEY': os.getenv("CLOUDINARY_API_KEY", "489213954361463"),
+    'CLOUD_NAME': os.getenv("CLOUD_NAME", "da16ppdly"),
+    'API_KEY': os.getenv("CLOUDINARY_API_KEY", "734771878894739"),
     'API_SECRET': os.getenv("CLOUDINARY_API_SECRET"),
 }
 
