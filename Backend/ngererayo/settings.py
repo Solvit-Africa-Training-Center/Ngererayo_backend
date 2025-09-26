@@ -57,29 +57,33 @@ CHANNEL_LAYERS = {
     }
 }
 
-# Cloudinary Configuration - UPDATED
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_NAME", "da16ppdly"),
-    'API_KEY': os.getenv("CLOUDINARY_API_KEY", "734771878894739"),
-    'API_SECRET': os.getenv("CLOUDINARY_API_SECRET"),
-}
 
-# Configure Cloudinary
-if all([os.getenv("CLOUD_NAME"), os.getenv("CLOUDINARY_API_KEY"), os.getenv("CLOUDINARY_API_SECRET")]):
+
+# Cloudinary config
+# Cloudinary config
+cloudinary.config( 
+  cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+  api_key = os.getenv("CLOUDINARY_API_KEY"),
+  api_secret = os.getenv("CLOUDINARY_API_SECRET"),
+  secure = True
+)
+
+if all([
+    os.getenv("CLOUDINARY_CLOUD_NAME"),
+    os.getenv("CLOUDINARY_API_KEY"),
+    os.getenv("CLOUDINARY_API_SECRET")
+]):
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    
 
 
 
-    
-    # Initialize Cloudinary
-    cloudinary.config(
-        cloud_name=os.getenv("CLOUD_NAME"),
-        api_key=os.getenv("CLOUDINARY_API_KEY"),
-        api_secret=os.getenv("CLOUDINARY_API_SECRET")
-    )
+    print("DEBUG CLOUDINARY SETTINGS:")
+    print("  URL:", os.getenv("CLOUDINARY_URL"))
+    print("  NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
+    print("  KEY:", os.getenv("CLOUDINARY_API_KEY"))
+    print("  SECRET:", os.getenv("CLOUDINARY_API_SECRET"))
+
 else:
-    # Fallback to local storage if Cloudinary credentials are missing
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     print("Warning: Cloudinary credentials not found. Using local media storage.")
