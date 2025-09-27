@@ -31,8 +31,6 @@ class PlaceOrderView(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serilaizer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 class GetOrdersView(APIView):
     permission_classes =[permissions.IsAuthenticated]
 

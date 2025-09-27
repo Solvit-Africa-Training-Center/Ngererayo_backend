@@ -10,7 +10,7 @@ from .consultant_view import (ConsultantListView,
                               PostView,
                               ConsultantAllFollwers,
                               FollowConsultantview,FollowConsultantPostView)
-from .paymeny_views import CreateCheckoutSession,stripe_webhook
+
 from .placeorder import PlaceOrderView,GetOrdersView,OwnerOrdersView
 from .RequestedFarmer import RequestTobeOwnerView
 from .messaging_views import (ProductMessageView,
@@ -48,7 +48,7 @@ from .views import (ProductView,
                     
                     OwnerEditProductView, )
 
-
+from .paymeny_views import CreatePaymentView,stripe_webhook
 from .comments_views import (SendCommentView,
                              CommentsRepliesView,
                              GetCommentsView,
@@ -102,8 +102,6 @@ path("comments/<int:product_id>/send/", SendProductCommentsView.as_view(), name=
 path("comments/<int:comment_id>/reply/", ReplyProductComments.as_view(), name="reply-comment"),
 path("comments/<int:product_id>/", GetProductCommentsView.as_view(), name="get-comments"),
 path("comments/replies/<int:comment_id>/", GetProductCommentsReplyView.as_view(), name="get-comment-replies"),
-path("create-checkout-session/",CreateCheckoutSession.as_view(),name="create-checkout-session"),
-path("stripe-webhook/",stripe_webhook,name="stripe-webhook"),
 path("testimonials/",TestimonialView.as_view(),name="testimonials"),
 path("customer-support/",CustomerSupportView.as_view(),name="customer-support"),
 path("consultants/",ConsultantListView.as_view(),name="consultants"),
@@ -124,6 +122,9 @@ path("comments/<int:comment_id>/delete/", DeleteYourCommentView.as_view(), name=
 path("comments/<int:comment_id>/edit/", EditYourCommentView.as_view(), name="edit-your-comment"),
 path("comments/<int:comment_id>/owner-delete/", ProductOwnerDeleteCommentView.as_view(), name="product-owner-delete-comment"),
 
+
+path("payment/<int:order_id>/pay/",CreatePaymentView.as_view(),name="create-payment"),
+path("stripe-webhook/",stripe_webhook,name="stripe-webhook"),
 
 ]
 
