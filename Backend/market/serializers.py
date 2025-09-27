@@ -246,7 +246,11 @@ class ConsultantPostSerializer(serializers.ModelSerializer):
              if not data.get("post_description") and not data.get("post_image"):
                  raise serializers.ValidationError("Either post description or post image must be provided.")
              return data
-
+     def get_post_image(self,obj):
+         request=self.context.get("request")
+         if not  request:
+             return None
+         return request.build_absolute_uri(obj.post_image.url)
 
 
 

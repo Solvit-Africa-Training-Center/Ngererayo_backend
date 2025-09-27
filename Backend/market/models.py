@@ -144,7 +144,7 @@ class ConsultantPost(models.Model):
     consultant=models.ForeignKey(Consultant,on_delete=models.CASCADE)
     post_title=models.CharField(max_length=100)
     post_description=models.TextField(blank=True,null=True)
-    post_image=models.ImageField(upload_to='post_images',blank=True,null=True)
+    post_image=CloudinaryField("image",folder='post_images',blank=True,null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name="ConsultantPost"
